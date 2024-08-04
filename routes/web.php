@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     // Category Routes
     Route::get('/categories/{category}', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/categories/{category}/bookmarks', [CookBookController::class, 'storeBookmark'])->name('categories.storeBookmark');
 //    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 //    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
 //    Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 
+    //Bookmark Routes
+    Route::post('/recipes/{recipe}/bookmark', [RecipeController::class, 'bookmark']);
     // CookBook Routes
     Route::get('/cookbook', [CookBookController::class, 'index'])->name('cookbook.index');
     Route::post('/cookbook', [CookBookController::class, 'store'])->name('cookbook.store');

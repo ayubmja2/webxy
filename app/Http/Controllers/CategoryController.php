@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -31,9 +32,15 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Category $category)
     {
-        //
+        $user = Auth::user();
+        $recipeId = $request->input('bookmarkId');
+
+        //Attach the recipe to the category for the authenticated user
+        $category->recipes()->attach($recipeId, ['user_id' => $user->id]);
+
+
     }
 
     /**

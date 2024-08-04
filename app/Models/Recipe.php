@@ -25,6 +25,11 @@
             return $this->belongsToMany(Category::class, 'category_recipe')->withPivot('user_id')->withTimestamps();
         }
 
+        public function bookmarkedByUsers()
+        {
+            return $this->belongsToMany(User::class, 'recipe_user')->withTimestamps();
+        }
+
         public function setImageUrlAttribute($value){
             if($value){
                 $user_id = $this->user_id;

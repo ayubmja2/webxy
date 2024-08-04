@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CookBookController extends Controller
@@ -12,23 +13,25 @@ class CookBookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         //fetch user categories
-        $categories = Category::where('user_id',$user->id)->with('recipes')->get();
+        $categories = $user->categories()->get();
 
+        $bookmarkedRecipes = $user->bookmarkedRecipes()->whereDoesntHave('categories', function ($query) use ($user) {
+            $query->where('category_recipe.user_id',$user->id);
+        })->get();
+
+//        dd($bookmarkedRecipes);
         //fetch user recipes
         $recipes = Recipe::where('user_id', $user->id)->get();
-
-        //fetch uncategorized bookmarks
-        $uncategorizedBookmarks = $user->bookmarkedRecipes()->whereDoesntHave('categories')->get();
 
         return Inertia::render('CookBook/Index', [
             'categories' => $categories,
             'recipes' => $recipes,
-            'uncategorizedBookmarks' => $uncategorizedBookmarks,
+            'bookmarkedRecipes' => $bookmarkedRecipes
         ]);
     }
 
@@ -57,6 +60,16 @@ class CookBookController extends Controller
         return response()->json(['category' => $category], 201);
     }
 
+    public function storeBookmark(Request $request, Category $category){
+        $user = Auth::user();
+        $recipeId = $request->input('bookmarkId');
+
+
+        //Attach the recipe to the category for the authenticated user
+        $category->recipes()->attach($recipeId, ['user_id' => $user->id]);
+
+        return back();
+    }
     /**
      * Display the specified resource.
      */

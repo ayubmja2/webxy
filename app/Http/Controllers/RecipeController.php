@@ -6,6 +6,7 @@
     use App\Models\Ingredient;
     use App\Models\Recipe;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\Log;
     use Illuminate\Support\Facades\Storage;
     use Inertia\Inertia;
@@ -19,12 +20,19 @@
          */
         public function index()
         {
+            $user = Auth::user();
             // Retrieve all recipes with their related categories and ingredients using eager loading
             $recipes = Recipe::with(['categories', 'ingredients'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
-            $categories = Category::with('user')->get();
+            // Add bookmark status to each recipe
+            $recipes->getCollection()->transform(function ($recipe) {
+                $recipe->is_bookmarked = auth()->user()->bookmarkedRecipes->contains($recipe->id);
+                return $recipe;
+            });
+
+            $categories = $user->categories()->get();
 
             // Return the recipes to the Inertia View
             return Inertia::render('Recipes/Index', [
@@ -195,6 +203,19 @@
                 'recipes' => $results,
                 'query' => $query,
             ]);
+        }
+
+        public function bookmark(Request $request, Recipe $recipe) {
+            $user = $request->user();
+
+            // Preventing a user from bookmarking their own recipe.
+            if($user->id === $recipe->user_id){
+                return response()->json(['error' => 'You cannot bookmark your own recipe'], 403);
+            }
+
+            //Toggle the bookmark
+            $user->bookmarkedRecipes()->toggle($recipe->id);
+            return response()->json(['success' => true]);
         }
     }
 

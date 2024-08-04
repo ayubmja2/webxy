@@ -77,6 +77,14 @@ const editRecipe = (id) => {
     router.get(`/recipes/${id}/edit`);
 };
 
+const toggleBookmark = async (recipe) => {
+    try {
+        await axios.post(`/recipes/${recipe.id}/bookmark`);
+        recipe.is_bookmarked = !recipe.is_bookmarked;
+    }catch (error) {
+        console.log('Error bookmarking recipe:', error);
+    }
+};
 </script>
 
 <template>
@@ -99,7 +107,9 @@ const editRecipe = (id) => {
                        </div>
 <!--                       bookmark icon-->
                        <div class="text-right mt-2">
-                           <i class="far fa-bookmark bookmark-icon ml-12"></i>
+                           <button @click="toggleBookmark(recipe)">
+                               <i :class="recipe.is_bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark'" class="bookmark-icon ml-12"></i>
+                           </button>
                        </div>
                    </div>
                    <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">

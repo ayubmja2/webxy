@@ -5,17 +5,14 @@ import {router, usePage, Link} from "@inertiajs/vue3";
 import Panel from "@/Components/Panel.vue";
 
 const {props} = usePage();
-//Categories, Recipes, and uncategorized bookmarks data from the backend
-
+// Categories, Recipes, and uncategorized bookmarks data from the backend
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
-const uncategorizedBookmarks = ref(props.uncategorizedBookmarks);
-
-//Form data for creating a new category
+const bookmarkedRecipes = ref(Array.isArray(props.bookmarkedRecipes) ? props.bookmarkedRecipes : []);
+// Form data for creating a new category
 const newCategoryTitle = ref('');
 
-//Function to handle creating a new category
-
+// Function to handle creating a new category
 const createCategory = async () => {
     try {
         const response = await axios.post('/cookbook', {
@@ -30,21 +27,29 @@ const createCategory = async () => {
     }
 };
 
-// function to handle dragging a bookmark to a category
+// Function to handle dragging a bookmark to a category
 const dragBookmark = (event, bookmarkId) => {
     event.dataTransfer.setData('bookmarkId', bookmarkId);
 };
 
 // Function to handle dropping a bookmark in a category
 const dropBookmark = async(event, categoryId) => {
+    event.preventDefault();
+
     const bookmarkId = event.dataTransfer.getData('bookmarkId');
     await router.post(`/categories/${categoryId}/bookmarks`, {
         bookmarkId: bookmarkId,
     }, {
         onSuccess: () => {
-            uncategorizedBookmarks.value = uncategorizedBookmarks.value.filter(bookmark => bookmark.id != bookmarkId);
+            const updatedBookmarks = bookmarkedRecipes.value.filter(bookmark => bookmark.id !== parseInt(bookmarkId));
+            bookmarkedRecipes.value = updatedBookmarks;
         },
     });
+};
+
+// Prevent default behavior when dragging over the category
+const allowDrop = (event) => {
+    event.preventDefault();
 };
 
 </script>
@@ -52,35 +57,36 @@ const dropBookmark = async(event, categoryId) => {
 <template>
     <AuthenticatedLayout>
         <div class="container mx-auto m-4 px-4 mt-20">
-            <!--   Form For creating categories  -->
-           <Panel>
-               <div class="flex flex-col">
-                   <div class="text-center">
-                       <form @submit.prevent="createCategory">
-                           <input type="text" class="rounded-2xl opacity-50 mr-4" v-model="newCategoryTitle" placeholder="New Category"/>
-                           <button
-                               class="bg-orange-400 max-sm:mt-2 md:ml-4 rounded-2xl p-2 px-4 shadow dark:shadow-amber-500"
-                               type="submit">New Category
-                           </button>
-                       </form>
-                   </div>
-               </div>
-           </Panel>
+            <!-- Form For creating categories -->
+            <Panel>
+                <div class="flex flex-col">
+                    <div class="text-center">
+                        <form @submit.prevent="createCategory">
+                            <input type="text" class="rounded-2xl opacity-50 mr-4" v-model="newCategoryTitle" placeholder="New Category"/>
+                            <button class="bg-orange-400 max-sm:mt-2 md:ml-4 rounded-2xl p-2 px-4 shadow dark:shadow-amber-500" type="submit">New Category</button>
+                        </form>
+                    </div>
+                </div>
+            </Panel>
 
-            <!--  Category section  -->
+            <!-- Category section -->
             <div class="grid grid-cols-2 m-4 gap-2">
-              <Panel>
-                  <div class="flex flex-col space-y-2 text-center">
-                      <div>
-                          <h1>New Categories</h1>
-                      </div>
-                      <ul class="flex flex-wrap justify-evenly max-sm:flex-col text-center">
-                          <li v-for="category in categories" :key="category.id" class="p-2 bg-gray-200 rounded-lg shadow">
-                              <Link :href="`/categories/${category.id}`">{{ category.title }}</Link>
-                          </li>
-                      </ul>
-                  </div>
-              </Panel>
+                <Panel>
+                    <div class="flex flex-col space-y-2 text-center">
+                        <div>
+                            <h1>New Categories</h1>
+                        </div>
+                        <ul class="flex flex-wrap justify-evenly max-sm:flex-col text-center">
+                            <li v-for="category in categories"
+                                class="p-2 bg-gray-200 rounded-lg shadow"
+                                :key="category.id"
+                                @dragover="allowDrop"
+                                @drop="(event) => dropBookmark(event,category.id)">
+                                <Link :href="`/categories/${category.id}`">{{ category.title }}</Link>
+                            </li>
+                        </ul>
+                    </div>
+                </Panel>
 
                 <Panel>
                     <div class="container mx-auto">
@@ -90,14 +96,11 @@ const dropBookmark = async(event, categoryId) => {
                         <div class="container mx-auto">
                             <div class="h-80 overflow-y-scroll hide-scrollbar">
                                 <ul class="flex flex-col space-y-2">
-                                    <!--
-                                    This is where uncategorized bookmarks go and get listed here. You can click on them and drag them over
+                                    <!-- This is where uncategorized bookmarks go and get listed here. You can click on them and drag them over
                                     the category the user has created and save them in that category they dropped it there. The uncategorized bookmark that gets
-                                    dropped in a category should be removed from the uncategorized section.
-                                      -->
-
-                                    <li v-for="bookmark in uncategorizedBookmarks" :key="bookmark.id" draggable="true" @dragstart="(event) => dropBookmark(event, bookmark.id)"
-                                        class="-2 bg-gray-200 rounded-lg shadow">
+                                    dropped in a category should be removed from the uncategorized section. -->
+                                    <li v-for="bookmark in bookmarkedRecipes" :key="bookmark.id" draggable="true" @dragstart="(event) => dragBookmark(event, bookmark.id)"
+                                        class="p-2 bg-gray-200 rounded-lg shadow">
                                         {{ bookmark.title }}
                                     </li>
                                 </ul>
@@ -113,7 +116,7 @@ const dropBookmark = async(event, categoryId) => {
                         <div class="container mx-auto">
                             <div class="h-80 overflow-x-auto hide-scrollbar">
                                 <ul class="flex">
-                                    <!--  This is where recipes that the user creates will live. So they have an opportunity to update/view/delete them-->
+                                    <!-- This is where recipes that the user creates will live. So they have an opportunity to update/view/delete them -->
                                     <li v-for="recipe in recipes" :key="recipe.id" class="p-2 bg-gray-200 rounded-lg shadow">
                                         {{ recipe.title }}
                                     </li>

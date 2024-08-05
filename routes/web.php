@@ -28,8 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories/{category}/bookmarks', [CookBookController::class, 'storeBookmark'])->name('categories.storeBookmark');
 //    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 //    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-//    Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-//    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::delete('/categories/{category}/recipes/{recipe}', [CategoryController::class, 'removeRecipe']);
 
     // Recipe Routes
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');

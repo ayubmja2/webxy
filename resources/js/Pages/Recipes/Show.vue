@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {usePage, Link} from '@inertiajs/vue3';
+import Panel from "@/Components/Panel.vue";
 
 const {props} = usePage();
 const recipe = props.recipe;
@@ -8,34 +9,58 @@ const recipe = props.recipe;
 
 <template>
 <AuthenticatedLayout>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">{{recipe.title}}</h1>
-        <div class="mb-4">
-            <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image" class="w-full h-auto rounded-lg">
-        </div>
-        <div class="mb-4">
-            <h2>Description</h2>
-            <p>{{recipe.description}}</p>
-        </div>
-        <div class="mb-4">
-            <h2 class="text-xl font-bold">Instructions</h2>
-            <p>{{recipe.instruction}}</p>
-        </div>
-        <div class="mb-4">
-            <h2 class="text-xl font-bold">Ingredients</h2>
-            <ul>
-                <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">
-                    {{ingredient.pivot.quantity}} {{ingredient.pivot.unit}} of {{ingredient.name}}
-                </li>
-            </ul>
-        </div>
-        <div class="mb-4">
-            <h2 class="text-xl font-bold">Categories</h2>
-            <ul>
-                <li v-for="category in recipe.categories" :key="category.id">{{category.name}}</li>
-            </ul>
-        </div>
-        <Link  v-if="recipe.user_id === props.auth.user.id " :href="`/recipes/${recipe.id}/edit`" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Edit Recipe</Link>
+    <div class="container mx-auto">
+        <Panel class="flex flex-col mt-6">
+            <div class="grid grid-cols-3 justify-items-end font-medium mb-8">
+
+                <Link v-if="recipe.user_id === props.auth.user.id"  class="col-start-1 justify-self-start" :href="`/recipes/${recipe.id}/edit`">Edit Recipe</Link>
+
+                <h1 class="col-start-2 justify-self-center">{{recipe.title}}</h1>
+
+                <div class="relative">
+                    <i class="fa-solid fa-ellipsis cursor-pointer" id="ellipsis-icon"></i>
+                    <div id="dropdown-menu"
+                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                           id="delete-from-category">Remove</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="container mx-auto mb-8">
+                <div class="flex flex-row justify-evenly">
+                    <img class="rounded-lg shadow-2xl dark:shadow-orange-500 mb-4 h-60 w-60" v-if="recipe.image_url" :src=recipe.image_url alt="">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 text-center gap-4 mb-8">
+                <div>
+                    <Panel>
+                        <h1>Instructions</h1>
+                        <h2 class="mt-4">{{recipe.instruction}}</h2>
+                    </Panel>
+                </div>
+                <div>
+                    <Panel>
+                        <h1>Ingredients</h1>
+                        <ul class="mt-4">
+                         <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">
+                             {{ingredient.pivot.quantity}} {{ingredient.pivot.unit}} of {{ingredient.name}}
+                         </li>
+                        </ul>
+                    </Panel>
+                </div>
+            </div>
+
+            <div class="text-center font-medium">
+                <Panel>
+                    <h1>Allergens</h1>
+                    <div class="flex flex-wrap gap-2">
+
+                    </div>
+                </Panel>
+            </div>
+        </Panel>
     </div>
 </AuthenticatedLayout>
 </template>

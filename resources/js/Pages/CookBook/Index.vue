@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {ref} from "vue";
+import {ref, onMounted} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Panel from "@/Components/Panel.vue";
 
@@ -52,6 +52,41 @@ const allowDrop = (event) => {
     event.preventDefault();
 };
 
+const navigateToRecipe = (id) => {
+    router.get(`/recipes/${id}`);
+};
+
+const navigateToCategory = (id) => {
+    router.get(`/categories/${id}`);
+};
+
+const editRecipe = (id) => {
+    router.get(`/recipes/${id}/edit`);
+};
+
+const toggleBookmark = async (recipe) => {
+    try {
+        await axios.post(`/recipes/${recipe.id}/bookmark`);
+        recipe.is_bookmarked = !recipe.is_bookmarked;
+        if(recipe.is_bookmarked){
+            bookmarkedRecipes.value = bookmarkedRecipes.value.filter(bookmark => bookmark.id !== recipe.id);
+        }
+    }catch (error) {
+        console.log('Error bookmarking recipe:', error);
+    }
+};
+
+onMounted(() => {
+    const horizontalScrollContainers = document.querySelectorAll('.overflow-x-auto');
+    horizontalScrollContainers.forEach(container => {
+        container.addEventListener('wheel', function (e) {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                container.scrollLeft += e.deltaY;
+            }
+        });
+    });
+});
 </script>
 
 <template>
@@ -78,7 +113,7 @@ const allowDrop = (event) => {
                         </div>
                         <ul class="flex flex-wrap justify-evenly max-sm:flex-col text-center">
                             <li v-for="category in categories"
-                                class="p-2 bg-gray-200 rounded-lg shadow"
+                                class="p-2 bg-orange-400 rounded-lg shadow"
                                 :key="category.id"
                                 @dragover="allowDrop"
                                 @drop="(event) => dropBookmark(event,category.id)">
@@ -96,12 +131,22 @@ const allowDrop = (event) => {
                         <div class="container mx-auto">
                             <div class="h-80 overflow-y-scroll hide-scrollbar">
                                 <ul class="flex flex-col space-y-2">
-                                    <!-- This is where uncategorized bookmarks go and get listed here. You can click on them and drag them over
-                                    the category the user has created and save them in that category they dropped it there. The uncategorized bookmark that gets
-                                    dropped in a category should be removed from the uncategorized section. -->
                                     <li v-for="bookmark in bookmarkedRecipes" :key="bookmark.id" draggable="true" @dragstart="(event) => dragBookmark(event, bookmark.id)"
-                                        class="p-2 bg-gray-200 rounded-lg shadow">
-                                        {{ bookmark.title }}
+                                        class="p-2 rounded-lg">
+                                       <Panel>
+                                           <div class="flex items-center">
+                                               <img v-if="bookmark.image_url" :src="bookmark.image_url" alt="Recipe Image" class="w-20 h-20 rounded-lg mr-4">
+                                               <div class="flex-1 text-center">
+                                                   <h3 class="text-lg font-bold">{{ bookmark.title }}</h3>
+                                               </div>
+                                               <button class="bg-orange-500 text-white py-2 px-4 rounded-lg" @click="navigateToRecipe(bookmark.id)">Info</button>
+                                           </div>
+                                           <div class="text-right mt-2">
+                                               <button @click="toggleBookmark(bookmark)">
+                                                   <i :class="bookmark.is_bookmarked ? 'far fa-bookmark' : 'fas fa-bookmark'" class="bookmark-icon ml-5"></i>
+                                               </button>
+                                           </div>
+                                       </Panel>
                                     </li>
                                 </ul>
                             </div>
@@ -114,11 +159,18 @@ const allowDrop = (event) => {
                             <h1>My Recipes</h1>
                         </div>
                         <div class="container mx-auto">
-                            <div class="h-80 overflow-x-auto hide-scrollbar">
-                                <ul class="flex">
-                                    <!-- This is where recipes that the user creates will live. So they have an opportunity to update/view/delete them -->
-                                    <li v-for="recipe in recipes" :key="recipe.id" class="p-2 bg-gray-200 rounded-lg shadow">
-                                        {{ recipe.title }}
+                            <div class="h-40 overflow-x-auto hide-scrollbar">
+                                <ul class="flex space-x-1">
+                                    <li class="flex-shrink-0 w-1/2" v-for="recipe in recipes" :key="recipe.id">
+                                        <Panel>
+                                            <div class="flex items-center">
+                                                <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image" class="w-20 h-20 rounded-lg mr-2">
+                                                <div class="flex-1 text-center">
+                                                    <h3 class="text-lg font-bold">{{recipe.title}}</h3>
+                                                </div>
+                                                <button class="bg-orange-500 text-white py-2 px-4 rounded-lg" @click="navigateToRecipe(recipe.id)">Info</button>
+                                            </div>
+                                        </Panel>
                                     </li>
                                 </ul>
                             </div>
@@ -138,5 +190,20 @@ const allowDrop = (event) => {
     .grid{
         grid-template-columns: 1fr;
     }
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display:none;
+}
+.hide-scrollbar{
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+}
+.overflow-x-auto {
+    display: flex;
+    overflow-x:auto;
+    white-space: nowrap
+}
+.overflow-x-auto li{
+    display: inline-block;
 }
 </style>

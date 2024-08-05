@@ -84,7 +84,6 @@ const validateForm = () => {
 };
 
 const submit = () => {
-    console.log('Ingredients:', form.value.ingredients);
     if (!validateForm()) {
         return;
     }

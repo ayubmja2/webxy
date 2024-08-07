@@ -3,8 +3,19 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {usePage, Link} from '@inertiajs/vue3';
 import Panel from "@/Components/Panel.vue";
 
+
 const {props} = usePage();
 const recipe = props.recipe;
+
+//normalization function for strings to combat case sensitivity, plural forms and extra space.
+const normalizeString = (str) => {
+    return str.toLowerCase().trim().replace(/s$/, '');
+}
+
+const userAllergies = props.auth.user.allergens.map(allergy => normalizeString(allergy));
+const recipeIngredients = recipe.ingredients.map(ingredient => normalizeString((ingredient.name)));
+
+const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(ingredient));
 </script>
 
 <template>
@@ -52,11 +63,15 @@ const recipe = props.recipe;
                 </div>
             </div>
 
+            <!--  Where users allergies will be highlighted for them if it exists  -->
             <div class="text-center font-medium">
                 <Panel>
                     <h1>Allergens</h1>
                     <div class="flex flex-wrap gap-2">
-
+                        <span v-for="allergen in allergens" :key="allergen" class="bg-red-500 text-white rounded-2xl px-4 py-2">
+                             {{ allergen.charAt(0).toUpperCase() + allergen.slice(1) }}
+                        </span>
+                        <span v-if="allergens.length === 0">No allergens found.</span>
                     </div>
                 </Panel>
             </div>

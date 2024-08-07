@@ -11,6 +11,7 @@ const profileImage = ref(props.auth.user.profile_image_url || '');
 const newCoverImage = ref(null);
 const newProfileImage = ref(null);
 const showDropdown = ref(false);
+const currentSection = ref('account-info'); // State variable to track the current section
 
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
@@ -62,15 +63,57 @@ const updateProfileImage = async (type, file) => {
         alert('Failed to update profile.');
     }
 };
+
+const switchSection = (section) => {
+    currentSection.value = section;
+};
+
+//Allergies handling
+const allergiesInput = ref('');
+const allergies = ref(props.auth.user.allergens || [])
+
+const saveAllergies = async () => {
+    if(!allergiesInput.value.trim()){
+        return;
+    }
+
+    const newAllergy = allergiesInput.value.trim().toLowerCase();
+    if(allergies.value.includes(newAllergy)){
+        return;
+    }
+
+    try {
+        const response = await axios.post('/profile/update-allergens', {allergens: [...allergies.value, newAllergy]});
+        allergies.value = response.data.allergens;
+        allergiesInput.value = '';
+    }catch (error) {
+        console.log('Error updating allergens:', error);
+        alert('Failed to update allergens.')
+    }
+};
+
+const deleteAllergy = async (allergy) => {
+    try{
+        const response = await axios.post('/profile/update-allergens', {allergens: allergies.value.filter(a => a !== allergy)});
+        allergies.value = response.data.allergens;
+    }catch (error) {
+        console.log('Error deleting allergy:', error)
+        alert('Failed to delete allergy.');
+    }
+};
 </script>
+
 <template>
     <AuthenticatedLayout>
         <div class="relative">
             <img :src="coverArt || '/default-cover.jpg'" alt="cover art" class="w-full h-60 object-cover">
             <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center mt-4">
                 <div class="relative">
-                    <img :src="profileImage || '/default-profile.jpg'" alt="profile image" class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer" @click="handleProfileImageClick">
-                    <input type="file" @change="onProfileImageChange" accept="image/*" class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full">
+                    <img :src="profileImage || '/default-profile.jpg'" alt="profile image"
+                         class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer"
+                         @click="handleProfileImageClick">
+                    <input type="file" @change="onProfileImageChange" accept="image/*"
+                           class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full">
                 </div>
             </div>
             <div class="absolute top-0 right-0 m-4">
@@ -85,50 +128,107 @@ const updateProfileImage = async (type, file) => {
                 </div>
             </div>
         </div>
-        <div class="mx-auto">
+
+        <div class="container mx-auto mt-4">
             <div class="flex flex-col">
-                <div class="grid grid-cols-2">
-                    <div class="container h-80 place-content-center">
-                       <Panel class="space-y-6 w-1/2 mx-auto">
-                           <div class="text-center mt-4 font-medium text-2xl">
-                               <h1>Allergies</h1>
-                           </div>
-                           <div class="flex flex-row space-x-6 justify-center">
-                               <input type="text" placeholder="Wheat, Soy" class="rounded-xl">
-                               <button class="bg-amber-500 p-2 rounded-xl">Submit</button>
-                           </div>
-                       </Panel>
+                <Panel>
+                    <div class="container mx-auto">
+                        <ul class="flex flex-row justify-evenly">
+                            <li>
+                                <button @click="switchSection('public-profile')" class="bg-amber-500 rounded-2xl p-1 px-4">Public Profile</button>
+                            </li>
+                            <li>
+                                <button @click="switchSection('account-info')" class="bg-amber-500 rounded-2xl p-1 px-4">Account Info</button>
+                            </li>
+                            <li>
+                                <button @click="switchSection('settings')" class="bg-amber-500 rounded-2xl p-1 px-4">Settings</button>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="container h-80 place-content-center">
-                        <Panel class="space-y-6 w-1/2 mx-auto">
-                            <div class="text-center mt-4 font-medium text-2xl">
-                                <h1>Account Stats</h1>
+                </Panel>
+
+                <!-- Sections -->
+                <div v-if="currentSection === 'account-info'" class="grid grid-cols-2 p-2">
+                    <!-- Allergies Section-->
+                    <div class="container">
+                        <Panel class="space-y-2 w-1/2 mx-auto">
+                            <div class="text-center font-medium text-2xl">
+                                <h1>Allergies</h1>
                             </div>
-                            <div class="flex flex-row space-x-6 justify-center">
-                               <p>Amount of recipes posted during year/account visits and follows</p>
+                            <div class="container mx-auto flex flex-col space-y-4 p-6">
+                                <input type="text" v-model="allergiesInput" placeholder="wheat, soy, eggs" class="rounded-xl">
+                                <button @click="saveAllergies" class="bg-amber-500 p-2 rounded-xl">Save</button>
                             </div>
                         </Panel>
                     </div>
-                    <!-- This is where the users allergies will be inserted-->
-                    <div class="container mx-auto row-start-2 col-span-2 ">
-                        <div class="flex flex-col text-center font-medium text-2xl">
-                           <Panel>
-                               <h1>Your Food Allergies</h1>
-                           </Panel>
-                        </div>
+                    <!-- Account Stats section -->
+                    <div class="container">
+                        <Panel class="w-3/4 mx-auto">
+                            <div class="text-center font-medium text-2xl mb-3">
+                                <h1>Account Stats</h1>
+                            </div>
+                            <div class="flex flex-row justify-center">
+                                <div class="container">
+                                    <div class="text-center mb-4">
+                                        <p>account stats for follower, number of likes over 1yr, and number of bookmarks over yr</p>
+                                    </div>
+                                    <ul class="grid grid-rows-3 grid-flow-col-dense gap-4">
+                                        <li>1</li>
+                                        <li>2</li>
+                                        <li>3</li>
+                                        <li>4</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Panel>
                     </div>
+                </div>
+
+                <!-- Your Food Allergies Section -->
+                <div v-if="currentSection === 'account-info'" class="container row-start-2 col-span-2 mt-6">
+                    <div class="flex flex-col">
+                        <Panel>
+                            <div class="text-center font-medium text-2xl">
+                                <h1>Your Food Allergies</h1>
+                            </div>
+                            <div class="container mt-8">
+                                <div>
+                                    <!-- This is where the allergies will render after form submission.-->
+                                    <ul class="grid grid-rows-4 grid-flow-col gap-4 justify-items-center">
+                                        <li v-for="allergy in allergies" :key="allergy" class="relative bg-amber-500 rounded-2xl p-2 px-4">
+                                            <span>{{ allergy.charAt(0).toUpperCase() + allergy.slice(1) }}</span>
+                                            <button @click="deleteAllergy(allergy)" class="absolute top-1 right-1 text-red-600 font-bold">X</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Panel>
+                    </div>
+                </div>
+
+                <div v-if="currentSection === 'public-profile'">
+                    <!-- Public Profile Content Here -->
+                    <Panel>
+                        <h1>This is your public profile where you bio and stuff should be</h1>
+                    </Panel>
+                </div>
+
+                <div v-if="currentSection === 'settings'">
+                    <!-- Settings Content Here -->
+                    <Panel>
+                        <h1>This is your account settings are where you can update email, password and delete account</h1>
+                    </Panel>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
 
-
-
 <style scoped>
 .container {
     max-width: 1200px;
 }
+
 .profile-container {
     display: flex;
     justify-content: center;
@@ -136,6 +236,7 @@ const updateProfileImage = async (type, file) => {
     position: relative;
     top: -50px;
 }
+
 .profile-image {
     width: 150px;
     height: 150px;
@@ -144,9 +245,47 @@ const updateProfileImage = async (type, file) => {
     object-fit: cover;
     cursor: pointer;
 }
+
 .cover-art {
     width: 100%;
     height: 300px;
     object-fit: cover;
+}
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.bg-amber-500 {
+    background-color: #f59e0b;
+}
+
+.rounded-2xl {
+    border-radius: 1rem;
+}
+
+.p-2 {
+    padding: 0.5rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.text-red-600 {
+    color: #e3342f;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.hover\:text-blue-600:hover {
+    color: #3182ce;
 }
 </style>

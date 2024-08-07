@@ -70,8 +70,6 @@ class ProfileController extends Controller
             $user->cover_image_url = $coverImagePath;
         }
 
-
-
 //        if ($request->hasFile('profile_image')) {
 //            $profileImage = $request->file('profile_image');
 //            $profileImagePath = $this->uploadImage($profileImage, "user_{$user->id}/profile_assets/profile_images/avi");
@@ -97,6 +95,20 @@ class ProfileController extends Controller
 
         Storage::disk('spaces')->put("images/user_uploads/{$path}/{$imageName}", (string) $resizedImage, 'public');
         return Storage::disk('spaces')->url("images/user_uploads/{$path}/{$imageName}");
+    }
+
+    public function updateAllergens(Request $request){
+        $user = Auth::user();
+        $allergens = $request->input('allergens', []);
+
+        //save allergens as lowercase for consistency
+
+        $allergens = array_map('strtolower', $allergens);
+
+        $user->allergens = $allergens;
+        $user->save();
+
+        return response()->json(['allergens' => $user->allergens]);
     }
 
     /**

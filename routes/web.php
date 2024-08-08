@@ -23,13 +23,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
     route::post('/profile/update-allergens', [profileController::class, 'updateAllergens'])->name('profile.update-allergens');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/{user}/follow', [ProfileController::class, 'follow'])->name('profile.follow');
+    Route::post('/profile/{user}/unfollow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+
+
 
     // Category Routes
     Route::get('/categories/{category}', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categories/{category}/bookmarks', [CookBookController::class, 'storeBookmark'])->name('categories.storeBookmark');
-//    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
-//    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::delete('/categories/{category}/recipes/{recipe}', [CategoryController::class, 'removeRecipe']);
@@ -43,6 +46,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 
+    //post
+    Route::post('/recipe/{recipe}/like', [RecipeController::class, 'like'])->name('recipes.like');
+    Route::post('/recipe/{recipe}/repost', [RecipeController::class, 'repost'])->name('recipes.repost');
+
     //Bookmark Routes
     Route::post('/recipes/{recipe}/bookmark', [RecipeController::class, 'bookmark']);
     // CookBook Routes
@@ -52,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     // Search
     Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
+    Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
 });
 
 require __DIR__.'/auth.php';

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,12 +20,41 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request, User $user = null): Response
     {
+        $user = $user ?: $request->user();
+        $authUser = $request->user();
+        $isOwnProfile = $authUser->id === $user->id;
+        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
             'status' => session('status'),
+            'user' => $user,
+            'authUser' => $authUser,
+            'isFollowing' => $isFollowing,
+            'isOwnProfile' => $isOwnProfile,
         ]);
+    }
+
+    public function show(Request $request, User $user){
+        $authUser = $request->user();
+        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
+
+        return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
+            'status' => session('status'),
+            'user' => $user,
+            'authUser' => $authUser,
+            'isFollowing' => $isFollowing,
+            'isOwnProfile' => $authUser->id === $user->id,
+        ]);
+    }
+
+    public function search(Request $request) {
+        $query = $request->input('q');
+        $users = User::where('name', 'LIKE', "%{$query}%")->get();
+        return response()->json($users);
     }
 
     /**
@@ -40,11 +70,15 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        return Redirect::route('profile.edit', $request->user()->id);
     }
 
     public function updateProfile(Request $request){
         $user = Auth::user();
+
+        if ($request->user()->id !== $user->id){
+            return redirect()->back();
+        }
 
         $request->validate([
             'profile_image' => 'image|mimes:jpeg,png,jpg|max:2048',
@@ -70,18 +104,6 @@ class ProfileController extends Controller
             $user->cover_image_url = $coverImagePath;
         }
 
-//        if ($request->hasFile('profile_image')) {
-//            $profileImage = $request->file('profile_image');
-//            $profileImagePath = $this->uploadImage($profileImage, "user_{$user->id}/profile_assets/profile_images/avi");
-//            $user->profile_image_url = $profileImagePath;
-//        }
-//
-//        if ($request->hasFile('cover_image')) {
-//            $coverImage = $request->file('cover_image');
-//            $coverImagePath = $this->uploadImage($coverImage, "user_{$user->id}/profile_assets/profile_images/profile_cover");
-//            $user->cover_image_url = $coverImagePath;
-//        }
-
         $user->save();
         return redirect()->back();
     }
@@ -99,6 +121,10 @@ class ProfileController extends Controller
 
     public function updateAllergens(Request $request){
         $user = Auth::user();
+
+        if($request->user()->id !== $user->id){
+            return redirect()->back();
+        }
         $allergens = $request->input('allergens', []);
 
         //save allergens as lowercase for consistency
@@ -109,6 +135,23 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json(['allergens' => $user->allergens]);
+    }
+
+    public function follow(User $user) {
+        $authUser = auth()->user();
+
+        if($authUser->id !== $user->id && !$authUser->following()->where('following_user_id', $user->id)->exists()) {
+            $authUser->following()->attach($user->id);
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function unfollow(User $user) {
+        $authUser = auth()->user();
+        $authUser->following()->detach($user->id);
+
+        return response()->json(['success' => true]);
     }
 
     /**

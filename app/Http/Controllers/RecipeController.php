@@ -22,7 +22,7 @@
         {
             $user = Auth::user();
             // Retrieve all recipes with their related categories and ingredients using eager loading
-            $recipes = Recipe::with(['categories', 'ingredients'])
+            $recipes = Recipe::with(['categories', 'ingredients', 'user'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
@@ -215,6 +215,22 @@
 
             //Toggle the bookmark
             $user->bookmarkedRecipes()->toggle($recipe->id);
+            return response()->json(['success' => true]);
+        }
+
+        public function like(Recipe $recipe){
+            $user = auth()->user();
+            if(!$user->hasLiked($recipe)){
+                $user->like($recipe);
+            }
+            return response()->json(['success' => true]);
+        }
+
+        public function repost(Recipe $recipe){
+            $user = auth()->user();
+            if(!$user->hasReposted($recipe)){
+                $user->repost($recipe);
+            }
             return response()->json(['success' => true]);
         }
     }

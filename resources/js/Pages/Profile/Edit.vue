@@ -6,12 +6,13 @@ import axios from 'axios';
 import Panel from "@/Components/Panel.vue";
 
 const { props } = usePage();
-const coverArt = ref(props.auth.user.cover_image_url || '');
-const profileImage = ref(props.auth.user.profile_image_url || '');
+
+const coverArt = ref(props.user.cover_image_url || '');
+const profileImage = ref(props.user.profile_image_url || '');
 const newCoverImage = ref(null);
 const newProfileImage = ref(null);
 const showDropdown = ref(false);
-const currentSection = ref('account-info'); // State variable to track the current section
+const currentSection = ref('public-profile'); // State variable to track the current section
 
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
@@ -59,7 +60,6 @@ const updateProfileImage = async (type, file) => {
         });
         alert('Profile updated successfully!');
     } catch (error) {
-        console.error('Error updating profile:', error);
         alert('Failed to update profile.');
     }
 };
@@ -68,17 +68,17 @@ const switchSection = (section) => {
     currentSection.value = section;
 };
 
-//Allergies handling
+// Allergies handling
 const allergiesInput = ref('');
-const allergies = ref(props.auth.user.allergens || [])
+const allergies = ref(props.user.allergens || []);
 
 const saveAllergies = async () => {
-    if(!allergiesInput.value.trim()){
+    if (!allergiesInput.value.trim()) {
         return;
     }
 
     const newAllergy = allergiesInput.value.trim().toLowerCase();
-    if(allergies.value.includes(newAllergy)){
+    if (allergies.value.includes(newAllergy)) {
         return;
     }
 
@@ -86,18 +86,18 @@ const saveAllergies = async () => {
         const response = await axios.post('/profile/update-allergens', {allergens: [...allergies.value, newAllergy]});
         allergies.value = response.data.allergens;
         allergiesInput.value = '';
-    }catch (error) {
-        console.log('Error updating allergens:', error);
+    } catch (error) {
+
         alert('Failed to update allergens.')
     }
 };
 
 const deleteAllergy = async (allergy) => {
-    try{
+    try {
         const response = await axios.post('/profile/update-allergens', {allergens: allergies.value.filter(a => a !== allergy)});
         allergies.value = response.data.allergens;
-    }catch (error) {
-        console.log('Error deleting allergy:', error)
+    } catch (error) {
+
         alert('Failed to delete allergy.');
     }
 };
@@ -113,10 +113,10 @@ const deleteAllergy = async (allergy) => {
                          class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer"
                          @click="handleProfileImageClick">
                     <input type="file" @change="onProfileImageChange" accept="image/*"
-                           class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full">
+                           class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full" v-if="props.isOwnProfile">
                 </div>
             </div>
-            <div class="absolute top-0 right-0 m-4">
+            <div class="absolute top-0 right-0 m-4" v-if="props.isOwnProfile">
                 <button @click="toggleDropdown" class="text-white hover:text-blue-600">
                     <i class="fa-solid fa-gear fa-2x"></i>
                 </button>
@@ -135,20 +135,27 @@ const deleteAllergy = async (allergy) => {
                     <div class="container mx-auto">
                         <ul class="flex flex-row justify-evenly">
                             <li>
-                                <button @click="switchSection('public-profile')" class="bg-amber-500 rounded-2xl p-1 px-4">Public Profile</button>
+                                <button @click="switchSection('public-profile')"
+                                        class="bg-amber-500 rounded-2xl p-1 px-4">Public Profile
+                                </button>
                             </li>
                             <li>
-                                <button @click="switchSection('account-info')" class="bg-amber-500 rounded-2xl p-1 px-4">Account Info</button>
+                                <button @click="switchSection('account-info')"
+                                        class="bg-amber-500 rounded-2xl p-1 px-4" v-if="props.isOwnProfile">Account Info
+                                </button>
                             </li>
                             <li>
-                                <button @click="switchSection('settings')" class="bg-amber-500 rounded-2xl p-1 px-4">Settings</button>
+                                <button @click="switchSection('settings')" class="bg-amber-500 rounded-2xl p-1 px-4"
+                                        v-if="props.isOwnProfile">
+                                    Settings
+                                </button>
                             </li>
                         </ul>
                     </div>
                 </Panel>
 
                 <!-- Sections -->
-                <div v-if="currentSection === 'account-info'" class="grid grid-cols-2 p-2">
+                <div v-if="currentSection === 'account-info' && props.isOwnProfile" class="grid grid-cols-2 p-2">
                     <!-- Allergies Section-->
                     <div class="container">
                         <Panel class="space-y-2 w-1/2 mx-auto">
@@ -156,7 +163,8 @@ const deleteAllergy = async (allergy) => {
                                 <h1>Allergies</h1>
                             </div>
                             <div class="container mx-auto flex flex-col space-y-4 p-6">
-                                <input type="text" v-model="allergiesInput" placeholder="wheat, soy, eggs" class="rounded-xl">
+                                <input type="text" v-model="allergiesInput" placeholder="wheat, soy, eggs"
+                                       class="rounded-xl">
                                 <button @click="saveAllergies" class="bg-amber-500 p-2 rounded-xl">Save</button>
                             </div>
                         </Panel>
@@ -170,7 +178,8 @@ const deleteAllergy = async (allergy) => {
                             <div class="flex flex-row justify-center">
                                 <div class="container">
                                     <div class="text-center mb-4">
-                                        <p>account stats for follower, number of likes over 1yr, and number of bookmarks over yr</p>
+                                        <p>account stats for follower, number of likes over 1yr, and number of bookmarks
+                                            over yr</p>
                                     </div>
                                     <ul class="grid grid-rows-3 grid-flow-col-dense gap-4">
                                         <li>1</li>
@@ -185,7 +194,8 @@ const deleteAllergy = async (allergy) => {
                 </div>
 
                 <!-- Your Food Allergies Section -->
-                <div v-if="currentSection === 'account-info'" class="container row-start-2 col-span-2 mt-6">
+                <div v-if="currentSection === 'account-info' && props.isOwnProfile"
+                     class="container row-start-2 col-span-2 mt-6">
                     <div class="flex flex-col">
                         <Panel>
                             <div class="text-center font-medium text-2xl">
@@ -195,9 +205,12 @@ const deleteAllergy = async (allergy) => {
                                 <div>
                                     <!-- This is where the allergies will render after form submission.-->
                                     <ul class="grid grid-rows-4 grid-flow-col gap-4 justify-items-center">
-                                        <li v-for="allergy in allergies" :key="allergy" class="relative bg-amber-500 rounded-2xl p-2 px-4">
+                                        <li v-for="allergy in allergies" :key="allergy"
+                                            class="relative bg-amber-500 rounded-2xl p-2 px-4">
                                             <span>{{ allergy.charAt(0).toUpperCase() + allergy.slice(1) }}</span>
-                                            <button @click="deleteAllergy(allergy)" class="absolute top-1 right-1 text-red-600 font-bold">X</button>
+                                            <button @click="deleteAllergy(allergy)"
+                                                    class="absolute top-1 right-1 text-red-600 font-bold">X
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
@@ -209,14 +222,32 @@ const deleteAllergy = async (allergy) => {
                 <div v-if="currentSection === 'public-profile'">
                     <!-- Public Profile Content Here -->
                     <Panel>
-                        <h1>This is your public profile where you bio and stuff should be</h1>
+                        <div class="text-center font-medium text-2xl">
+                            <h1>Public Profile</h1>
+                        </div>
+                        <div class="container mt-8">
+                            <div>
+                                <!-- This is where the user's bio and public profile information will render -->
+                                <p>{{ props.user.bio }}</p>
+                                <!-- Display Follow/Unfollow button if viewing another user's profile -->
+                                <div v-if="props.authUser.id !== props.user.id">
+                                    <button v-if="!props.isFollowing" @click="followUser"
+                                            class="bg-blue-500 text-white p-2 rounded">Follow
+                                    </button>
+                                    <button v-else @click="unfollowUser" class="bg-red-500 text-white p-2 rounded">
+                                        Unfollow
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </Panel>
                 </div>
 
-                <div v-if="currentSection === 'settings'">
+                <div v-if="currentSection.value === 'settings' && props.isOwnProfile">
                     <!-- Settings Content Here -->
                     <Panel>
-                        <h1>This is your account settings are where you can update email, password and delete account</h1>
+                        <h1>This is your account settings are where you can update email, password and delete
+                            account</h1>
                     </Panel>
                 </div>
             </div>

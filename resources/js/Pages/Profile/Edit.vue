@@ -101,6 +101,23 @@ const deleteAllergy = async (allergy) => {
         alert('Failed to delete allergy.');
     }
 };
+
+const followUser = async() => {
+    try{
+        const response = await axios.post(`/profile/${props.user.id}/follow`);
+        props.isFollowing = true;
+    }catch(error){
+        console.log('Error following user', error);
+    }
+};
+const unfollowUser = async() => {
+    try{
+        const response = await axios.post(`/profile/${props.user.id}/unfollow`);
+        props.isFollowing = false;
+    }catch (error) {
+        console.log('Error unfollowing user:', error);
+    }
+};
 </script>
 
 <template>

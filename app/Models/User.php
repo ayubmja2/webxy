@@ -62,11 +62,11 @@
         }
 
         public function followers(): BelongsToMany {
-            return $this->belongsToMany(User::class, 'followers', 'following_user_id', 'follower_user_id');
+            return $this->belongsToMany(User::class, 'followers', 'following_user_id', 'follower_user_id')->withTimestamps();
         }
 
         public function following(): BelongsToMany {
-            return $this->belongsToMany(User::class, 'followers', 'follower_user_id', 'following_user_id');
+            return $this->belongsToMany(User::class, 'followers', 'follower_user_id', 'following_user_id')->withTimestamps();
         }
 
         public function follow(User $user){

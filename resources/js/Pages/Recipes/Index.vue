@@ -14,6 +14,8 @@ const users = ref([]); // store user search results
 const searchQuery = ref(props.query || '');
 const searchType = ref('recipes'); // Default search type
 
+const showFollowing = ref(props.showFollowing || false); // Track if "Following" filter is applied
+
 const loadMore = () => {
     if (recipes.value.next_page_url) {
         router.get(recipes.value.next_page_url, {}, {
@@ -26,6 +28,19 @@ const loadMore = () => {
             }
         });
     }
+};
+
+// Toggle between "All" and "Following" feeds
+const toggleFeed = (filter) => {
+    const url = filter === 'following' ? '/recipes?filter=following' : '/recipes';
+    router.get(url, {}, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: (page) => {
+            recipes.value = page.props.recipes;
+            showFollowing.value = page.props.showFollowing;
+        }
+    });
 };
 
 const search = async () => {
@@ -110,6 +125,13 @@ const toggleBookmark = async (recipe) => {
         <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Middle Panel: Recipe Feed -->
             <div class="col-span-1 md:col-span-2 h-full overflow-y-auto">
+            <!-- Add buttons to toggle feed between All and following -->
+                <div class="sticky top-0 z-10 flex justify-center space-x-4 mb-4">
+                    <Panel class="container py-3 text-center space-x-8">
+                        <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-blue-500 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
+                        <button @click="toggleFeed('following')" :class="showFollowing ? 'bg-blue-500 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following</button>
+                    </Panel>
+                </div>
                 <Panel>
                     <div v-if="recipes.data.length === 0 && searchType.value === 'recipes'" class="bg-red-200 p-4 mb-4 rounded-lg">
                         <p>No recipes found for "{{searchQuery}}".</p>

@@ -18,14 +18,28 @@
         /**
          * Display a listing of the resource.
          */
-        public function index()
+        public function index(Request $request)
         {
+            //get the currently authenticated user
             $user = Auth::user();
-            // Retrieve all recipes with their related categories and ingredients using eager loading
-            $recipes = Recipe::with(['categories', 'ingredients', 'user'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
 
+            //Determine if the user wants to see only followed user's recipes
+            $showFollowing = $request->query('filter') === 'following';
+
+            if($showFollowing) {
+
+                // get recipes only from users the current user is following.
+                $recipes = Recipe::whereIn('user_id', $user->following()->pluck('following_user_id'))
+                    ->with(['categories', 'ingredients', 'user'])
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10);
+            }else {
+
+                // Retrieve all recipes with their related categories and ingredients using eager loading
+                $recipes = Recipe::with(['categories', 'ingredients', 'user'])
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10);
+            }
             // Add bookmark status to each recipe
             $recipes->getCollection()->transform(function ($recipe) {
                 $recipe->is_bookmarked = auth()->user()->bookmarkedRecipes->contains($recipe->id);
@@ -39,6 +53,7 @@
                 'recipes' => $recipes,
                 'categories' => $categories,
                 'links' => $recipes->links(), // Include pagination links
+                'showFollowing' => $showFollowing
             ]);
         }
 

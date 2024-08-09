@@ -128,8 +128,8 @@ const toggleBookmark = async (recipe) => {
             <!-- Add buttons to toggle feed between All and following -->
                 <div class="sticky top-0 z-10 flex justify-center space-x-4 mb-4">
                     <Panel class="container py-3 text-center space-x-8">
-                        <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-blue-500 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
-                        <button @click="toggleFeed('following')" :class="showFollowing ? 'bg-blue-500 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following</button>
+                        <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-orange-400 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
+                        <button @click="toggleFeed('following')" :class="showFollowing ? 'bg-orange-400 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following</button>
                     </Panel>
                 </div>
                 <Panel>

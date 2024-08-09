@@ -212,6 +212,7 @@
 
             $results = Recipe::where('title', 'like', '%' . $query . '%')
                 ->orWhere('description', 'like', '%' . $query . '%')->orderBy('created_at', 'desc')
+                ->with('user')
                 ->paginate(10);
 
             return Inertia::render('Recipes/Index', [

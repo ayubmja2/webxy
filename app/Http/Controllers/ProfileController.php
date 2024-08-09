@@ -27,6 +27,9 @@ class ProfileController extends Controller
         $isOwnProfile = $authUser->id === $user->id;
         $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
 
+        //fetch followers
+        $followers = $user->followers;
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
             'status' => session('status'),
@@ -34,6 +37,7 @@ class ProfileController extends Controller
             'authUser' => $authUser,
             'isFollowing' => $isFollowing,
             'isOwnProfile' => $isOwnProfile,
+            'followers' => $followers,
         ]);
     }
 
@@ -137,6 +141,17 @@ class ProfileController extends Controller
         return response()->json(['allergens' => $user->allergens]);
     }
 
+    public function updateBio(Request $request){
+        $request->validate([
+            'bio' => 'string|max:500'
+        ]);
+
+        $user = Auth::user();
+        $user->bio = $request->input('bio');
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
     public function follow(User $user) {
         $authUser = auth()->user();
         if(!$authUser->following()->where('following_user_id', $user->id)->exists()){
@@ -151,6 +166,11 @@ class ProfileController extends Controller
             $authUser->following()->detach($user->id);
         }
         return redirect()->back();
+    }
+
+    public function getFollowers(User $user) {
+        $followers = $user->following()->get();
+        return response()->json(['followers' => $followers]);
     }
 
     /**

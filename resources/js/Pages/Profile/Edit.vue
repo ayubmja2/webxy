@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import Panel from "@/Components/Panel.vue";
 
@@ -14,6 +14,38 @@ const newProfileImage = ref(null);
 const showDropdown = ref(false);
 const currentSection = ref('public-profile'); // State variable to track the current section
 
+const showBioModal = ref(false);
+const bio = ref(props.user.bio || '');
+const followers = ref(props.followers || []);
+
+const openBioModal = () => {
+    showBioModal.value = true;
+};
+
+const closeBioModal = () => {
+    showBioModal.value = false;
+};
+
+const saveBio = async() => {
+    try{
+        await axios.post('/profile/update-bio', {bio: bio.value});
+        props.user.bio = bio.value;
+        closeBioModal();
+    }catch (error){
+        alert('Failed to update bio.')
+    }
+};
+
+//fetch followers when the component is mounted
+const fetchFollowers = async() => {
+    try{
+        const response = await axios.get(`/profile/${props.user.id}/followers`);
+        followers.value = response.data.followers;
+    }catch (error) {
+        console.log('Error fetching followers:', error);
+    }
+};
+fetchFollowers();
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
 };
@@ -245,7 +277,8 @@ const unfollowUser = async() => {
                         <div class="container mt-8">
                             <div>
                                 <!-- This is where the user's bio and public profile information will render -->
-                                <p>{{ props.user.bio }}</p>
+                                <p>{{ props.user.bio  || 'No bio available.'}}</p>
+                                <button v-if="props.isOwnProfile" @click="openBioModal" class="bg-blue-500 text-white p-2 rounded">Edit Bio</button>
                                 <!-- Display Follow/Unfollow button if viewing another user's profile -->
                                 <div v-if="props.authUser.id !== props.user.id">
                                     <button v-if="!props.isFollowing" @click="followUser"
@@ -256,6 +289,28 @@ const unfollowUser = async() => {
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </Panel>
+                    <!-- Modal for Bio Editing  -->
+                    <div v-if="showBioModal" class="fixed z-10 inset-0 overflow-y-auto">
+                        <div class="flex items-center justify-center min-h-screen">
+                            <div class="bg-white p-6 rounded-center min-h-screen">
+                                <h2 class="text-xl mb-4">Edit Bio</h2>
+                                <textarea v-model="bio" class="w-full p-2 border rounded mb-4" rows="4"></textarea>
+                                <button @click="saveBio" class="bg-green-500 text-white p-2 rounded">Save</button>
+                                <button @click="closeBioModal" class="bg-red-500 text-white p-2 rounded">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                <!--   Followers List Section -->
+                    <Panel>
+                        <div class="text-center font-medium text-sxl">
+                            <h1>Followers</h1>
+                        </div>
+                        <div class="container mt-8">
+                            <ul v-for="follower in followers" :key="follower.id" class="p-2">
+                                <Link :href="`/profile/${follower.id}`" class="text-blue-500">{{follower.name}}</Link>
+                            </ul>
                         </div>
                     </Panel>
                 </div>

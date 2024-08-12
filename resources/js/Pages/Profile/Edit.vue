@@ -4,6 +4,19 @@ import { ref } from 'vue';
 import { usePage, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import Panel from "@/Components/Panel.vue";
+import DeleteUserForm from "@/Pages/Profile/Partials/DeleteUserForm.vue";
+import UpdatePasswordForm from "@/Pages/Profile/Partials/UpdatePasswordForm.vue";
+import UpdateProfileInformationForm from "@/Pages/Profile/Partials/UpdateProfileInformationForm.vue";
+
+
+defineProps({
+    mustVerifyEmail : {
+        type:Boolean,
+    },
+    status: {
+        type: String
+    }
+});
 
 const { props } = usePage();
 
@@ -17,6 +30,9 @@ const currentSection = ref('public-profile'); // State variable to track the cur
 const showBioModal = ref(false);
 const bio = ref(props.user.bio || '');
 const followers = ref(props.followers || []);
+const followersCount = ref(props.followersCount || 0);
+const recipeCount = ref(props.recipeCount || 0);
+
 
 const openBioModal = () => {
     showBioModal.value = true;
@@ -42,16 +58,12 @@ const fetchFollowers = async() => {
         const response = await axios.get(`/profile/${props.user.id}/followers`);
         followers.value = response.data.followers;
     }catch (error) {
-        console.log('Error fetching followers:', error);
+        console.log('Error fetching followers:');
     }
 };
 fetchFollowers();
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
-};
-
-const handleProfileImageClick = () => {
-    alert("Profile Image Clicked");
 };
 
 const onCoverImageChange = (event) => {
@@ -90,7 +102,6 @@ const updateProfileImage = async (type, file) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        alert('Profile updated successfully!');
     } catch (error) {
         alert('Failed to update profile.');
     }
@@ -119,7 +130,6 @@ const saveAllergies = async () => {
         allergies.value = response.data.allergens;
         allergiesInput.value = '';
     } catch (error) {
-
         alert('Failed to update allergens.')
     }
 };
@@ -129,7 +139,6 @@ const deleteAllergy = async (allergy) => {
         const response = await axios.post('/profile/update-allergens', {allergens: allergies.value.filter(a => a !== allergy)});
         allergies.value = response.data.allergens;
     } catch (error) {
-
         alert('Failed to delete allergy.');
     }
 };
@@ -139,7 +148,7 @@ const followUser = async() => {
         const response = await axios.post(`/profile/${props.user.id}/follow`);
         props.isFollowing = true;
     }catch(error){
-        console.log('Error following user', error);
+        console.log('Error following user');
     }
 };
 const unfollowUser = async() => {
@@ -147,7 +156,7 @@ const unfollowUser = async() => {
         const response = await axios.post(`/profile/${props.user.id}/unfollow`);
         props.isFollowing = false;
     }catch (error) {
-        console.log('Error unfollowing user:', error);
+        console.log('Error unfollowing user:');
     }
 };
 </script>
@@ -159,8 +168,7 @@ const unfollowUser = async() => {
             <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center mt-4">
                 <div class="relative">
                     <img :src="profileImage || '/default-profile.jpg'" alt="profile image"
-                         class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer"
-                         @click="handleProfileImageClick">
+                         class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer">
                     <input type="file" @change="onProfileImageChange" accept="image/*"
                            class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full" v-if="props.isOwnProfile">
                 </div>
@@ -225,18 +233,10 @@ const unfollowUser = async() => {
                                 <h1>Account Stats</h1>
                             </div>
                             <div class="flex flex-row justify-center">
-                                <div class="container">
-                                    <div class="text-center mb-4">
-                                        <p>account stats for follower, number of likes over 1yr, and number of bookmarks
-                                            over yr</p>
-                                    </div>
-                                    <ul class="grid grid-rows-3 grid-flow-col-dense gap-4">
-                                        <li>1</li>
-                                        <li>2</li>
-                                        <li>3</li>
-                                        <li>4</li>
-                                    </ul>
-                                </div>
+                               <div class="text-center mb-4">
+                                   <p>You have created {{recipeCount}} recipes.</p>
+                                   <p>You have {{followersCount}} followers.</p>
+                               </div>
                             </div>
                         </Panel>
                     </div>
@@ -315,11 +315,18 @@ const unfollowUser = async() => {
                     </Panel>
                 </div>
 
-                <div v-if="currentSection.value === 'settings' && props.isOwnProfile">
+                <div v-if="currentSection === 'settings' && props.isOwnProfile">
                     <!-- Settings Content Here -->
                     <Panel>
-                        <h1>This is your account settings are where you can update email, password and delete
-                            account</h1>
+                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                            <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" class="max-w-xl"/>
+                        </div>
+                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                            <UpdatePasswordForm class="max-w-xl"/>
+                        </div>
+                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                            <DeleteUserForm class="max-w-xl"/>
+                        </div>
                     </Panel>
                 </div>
             </div>

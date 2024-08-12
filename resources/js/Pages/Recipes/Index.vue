@@ -1,20 +1,53 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { router, usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
-
 import Panel from "@/Components/Panel.vue";
-const { props } = usePage();
 
+const { props } = usePage();
+const notifications = ref([]);
+const newUploads = ref(0);
 
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
-const users = ref([]); // store user search results
+const users = ref([]);
 const searchQuery = ref(props.query || '');
-const searchType = ref('recipes'); // Default search type
+const searchType = ref('recipes');
+const showFollowing = ref(props.showFollowing);
 
-const showFollowing = ref(props.showFollowing || false); // Track if "Following" filter is applied
+
+
+const fetchUnreadNotifications = async () => {
+    try{
+        const response = await axios.get('/api/notifications/unread');
+        notifications.value = response.data;
+    }catch(error){
+        console.log(error);
+    }
+};
+
+const showNewUploads = async () => {
+    try{
+        await axios.post('/api/notifications/read');
+        notifications.value = [];
+        toggleFeed('following');
+        newUploads.value = 0;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+onMounted(() => {
+    fetchUnreadNotifications();
+    Echo.private('recipes')
+        .listen('RecipeUploaded', (event) => {
+            fetchUnreadNotifications();
+        }).notification((notification) => {
+        notifications.value.push(notification)
+        notifications.value = [...notifications.value]
+    })
+});
 
 const loadMore = () => {
     if (recipes.value.next_page_url) {
@@ -118,6 +151,7 @@ const toggleBookmark = async (recipe) => {
         console.log('Error bookmarking recipe:', error);
     }
 };
+
 </script>
 
 <template>
@@ -125,11 +159,14 @@ const toggleBookmark = async (recipe) => {
         <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Middle Panel: Recipe Feed -->
             <div class="col-span-1 md:col-span-2 h-full overflow-y-auto">
-            <!-- Add buttons to toggle feed between All and following -->
+                <!-- Add buttons to toggle feed between All and following -->
+
                 <div class="sticky top-0 z-10 flex justify-center space-x-4 mb-4">
                     <Panel class="container py-3 text-center space-x-8">
                         <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-orange-400 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
-                        <button @click="toggleFeed('following')" :class="showFollowing ? 'bg-orange-400 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following</button>
+                        <button @click="showNewUploads" :class="showFollowing ? 'bg-orange-400 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following
+                            <span v-if="notifications.length > 0" class="ml-2 bg-orange-400 text-white rounded-full px-2">{{notifications.length}}</span>
+                        </button>
                     </Panel>
                 </div>
                 <Panel>
@@ -162,11 +199,11 @@ const toggleBookmark = async (recipe) => {
                             </div>
                         </div>
                     </div>
-                   <div v-if="searchType === 'recipes'">
-                       <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
-                           Load More
-                       </button>
-                   </div>
+                    <div v-if="searchType === 'recipes'">
+                        <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
+                            Load More
+                        </button>
+                    </div>
                 </Panel>
             </div>
 

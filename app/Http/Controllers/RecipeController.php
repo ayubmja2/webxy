@@ -2,10 +2,12 @@
 
     namespace App\Http\Controllers;
 
-    use App\Models\Category;
+    use App\Events\RecipeUploaded;
+    use App\Notifications\RecipeNotification;
     use App\Models\Ingredient;
     use App\Models\Recipe;
     use Illuminate\Http\Request;
+    use Illuminate\Notifications\Events\BroadcastNotificationCreated;
     use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\Log;
     use Illuminate\Support\Facades\Storage;
@@ -50,6 +52,9 @@
 
             // Return the recipes to the Inertia View
             return Inertia::render('Recipes/Index', [
+                'auth' => [
+                    'user' => auth()->user(),
+                ],
                 'recipes' => $recipes,
                 'categories' => $categories,
                 'links' => $recipes->links(), // Include pagination links
@@ -103,6 +108,14 @@
                     'quantity' => $ingredientData['quantity'],
                     'unit' => $ingredientData['unit']
                 ]);
+            }
+
+
+            broadcast(new RecipeUploaded($recipe));
+
+            $followers = $request->user()->followers;
+            foreach ($followers as $follower) {
+               $follower->notify(new RecipeNotification($recipe));
             }
 
 

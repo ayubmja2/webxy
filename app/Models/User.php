@@ -8,6 +8,8 @@
     use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     use Illuminate\Foundation\Auth\User as Authenticatable;
     use Illuminate\Notifications\Notifiable;
+    use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\Storage;
 
     class User extends Authenticatable
     {
@@ -114,5 +116,22 @@
         public function hasReposted(Recipe $recipe)
         {
             return $this->reposts()->where('recipe_id', $recipe->id)->exists();
+        }
+
+        public static function boot() {
+            parent::boot();
+
+            static::deleting(function( User $user) {
+                $user->deleteUserFiles();
+            });
+        }
+
+        public function deleteUserFiles() {
+            $folderPath = 'images/user_uploads/user_' . $this->id;
+            try {
+                Storage::disk('spaces')->deleteDirectory($folderPath);
+            }catch (\Exception $e){
+                Log::error('Failed to delete user folder:');
+            }
         }
     }

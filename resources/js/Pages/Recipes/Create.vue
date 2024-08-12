@@ -3,6 +3,23 @@ import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Panel from "@/Components/Panel.vue";
+import Pusher from "pusher-js";
+import Echo from "laravel-echo";
+
+//setup pusher
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '9ed8ddbfeadd466bd1a2',
+    cluster: 'us2',
+    encrypted: true,
+    forceTLS: true
+})
+
+//sub to channel
+
+// const channel = window.Echo.private('recipes');
 
 // Define the measurement units
 
@@ -48,7 +65,20 @@ const removeIngredient = (index) => {
     form.value.ingredients.splice(index, 1);
 };
 
-const submit = () => {
+// Helper function to get socket ID as a promise
+const getSocketId = () => {
+    return new Promise((resolve) => {
+        if (window.Echo.socketId()) {
+            resolve(window.Echo.socketId());
+        } else {
+            window.Echo.connector.pusher.connection.bind('connected', () => {
+                resolve(window.Echo.socketId());
+            });
+        }
+    });
+};
+
+const submit = async () => {
     const formData = new FormData();
     formData.append('title', form.value.title);
     formData.append('description', form.value.description);
@@ -61,10 +91,17 @@ const submit = () => {
         formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
         formData.append(`ingredients[${index}][unit]`, ingredient.unit);
     });
-    router.post('/recipes', formData);
-};
-</script>
 
+    try {
+        const socketId = await getSocketId(); // Wait for socket_id to be available
+        // formData.append('socket_id', socketId);
+        router.post('/recipes', formData);
+    } catch (error) {
+        console.error('Error getting socket_id:', error);
+    }
+};
+
+</script>
 <template>
     <AuthenticatedLayout>
         <div class="container mx-auto p-4">

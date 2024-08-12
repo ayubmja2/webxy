@@ -12,7 +12,7 @@ const normalizeString = (str) => {
     return str.toLowerCase().trim().replace(/s$/, '');
 }
 
-const userAllergies = props.auth.user.allergens.map(allergy => normalizeString(allergy));
+const userAllergies = (props.auth.user.allergens || []).map(allergy => normalizeString(allergy));
 const recipeIngredients = recipe.ingredients.map(ingredient => normalizeString((ingredient.name)));
 
 const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(ingredient));

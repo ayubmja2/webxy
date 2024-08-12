@@ -5,6 +5,8 @@
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
     use Illuminate\Foundation\Application;
+    use Illuminate\Foundation\Auth\EmailVerificationRequest;
+    use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
     use Inertia\Inertia;
 
@@ -17,7 +19,25 @@
         ]);
     });
 
-    Route::middleware('auth')->group(function () {
+
+// Email Verification Routes
+    Route::get('/email/verify', function () {
+        return Inertia::render('Auth/VerifyEmail'); // Update this with the correct view
+    })->middleware('auth')->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/recipes');
+    })->middleware(['auth', 'signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Verification link sent!');
+    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+    Route::middleware(['auth', 'verified'])->group(function () {
+
+        // Profile Route
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
@@ -70,16 +90,5 @@
             return auth()->user()->unreadNotifications->markAsRead();
         });
     });
-
-//    // Fetch unread notifications
-//    Route::get('/api/notifications/unread', function(){
-//        return auth()->user()->unreadNotifications;
-//    });
-//
-//// Mark all notifications as read
-//    Route::post('/api/notifications/read', function(){
-//        auth()->user()->unreadNotifications->markAsRead();
-//        return response()->json(['status' => 'success']);
-//    });
 
     require __DIR__ . '/auth.php';

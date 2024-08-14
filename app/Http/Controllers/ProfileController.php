@@ -34,6 +34,7 @@ class ProfileController extends Controller
 
         $recipeCount = $user->recipes()->count();
 
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
             'status' => session('status'),
@@ -51,6 +52,11 @@ class ProfileController extends Controller
         $authUser = $request->user();
         $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
 
+        //fetch followers
+        $followers = $user->followers;
+
+        $recipeCount = $user->recipes()->count();
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
             'status' => session('status'),
@@ -58,6 +64,8 @@ class ProfileController extends Controller
             'authUser' => $authUser,
             'isFollowing' => $isFollowing,
             'isOwnProfile' => $authUser->id === $user->id,
+            'followersCount' => count($followers),
+            'recipeCount' => $recipeCount,
         ]);
     }
 

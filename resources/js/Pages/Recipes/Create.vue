@@ -37,12 +37,16 @@ const measurementUnits = ref(
         'Quart (qt)',
         'Gallon (gal)',
         'Milliliter (ml)',
-        'Liter (l)'
+        'Liter (l)',
+        'Large',
+        'Medium',
+        'Small'
     ]);
 
 // Define the Quantity
 
-const quantities = ref(['1/4 ', '1/2 ', '1/8 ', '1/16 ', '1', '2', '3',  '4', '5']);
+const quantities = ref(['1/4', '1/2', '1/3', '1', '2', '3']);
+
 
 
 const form = ref({
@@ -125,9 +129,8 @@ const submit = async () => {
                         <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex items-center mb-2">
                             <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="mr-2 p-2 flex-1 rounded-md border-gray-300 shadow-sm">
 
-                            <select v-model="ingredient.quantity" class="mr-4 ml-4 p-2 pr-4 pl-6 rounded-md border-gray-300 shadow-sm quantity-select">
-                                <option v-for="quantity in quantities " :key="quantity" :value="quantity">{{ quantity }}</option>
-                            </select>
+                            <!-- Quantity Input Field -->
+                            <input type="text" v-model="ingredient.quantity" placeholder="e.g., 1 3/4" class="mr-4 ml-4 p-2 pr-4 pl-6 rounded-md border-gray-300 shadow-sm">
 
                             <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">
                                 <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>

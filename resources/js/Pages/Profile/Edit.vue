@@ -33,7 +33,7 @@ const followers = ref(props.followers || []);
 const followersCount = ref(props.followersCount || 0);
 const recipeCount = ref(props.recipeCount || 0);
 
-
+console.log(recipeCount);
 const openBioModal = () => {
     showBioModal.value = true;
 };

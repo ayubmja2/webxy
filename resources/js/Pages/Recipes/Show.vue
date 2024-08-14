@@ -19,69 +19,79 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
 </script>
 
 <template>
-<AuthenticatedLayout>
-    <div class="container mx-auto">
-        <Panel class="flex flex-col mt-6">
-            <div class="grid grid-cols-3 justify-items-end font-medium mb-8">
+    <AuthenticatedLayout>
+        <div class="container mx-auto">
+            <Panel class="flex flex-col mt-6">
+                <div class="grid grid-cols-3 justify-items-end font-medium mb-8">
 
-                <Link v-if="recipe.user_id === props.auth.user.id"  class="col-start-1 justify-self-start" :href="`/recipes/${recipe.id}/edit`">Edit Recipe</Link>
+                    <Link v-if="recipe.user_id === props.auth.user.id" class="col-start-1 justify-self-start"
+                          :href="`/recipes/${recipe.id}/edit`">Edit Recipe
+                    </Link>
 
-                <h1 class="col-start-2 justify-self-center">{{recipe.title}}</h1>
+                    <h1 class="col-start-2 justify-self-center">{{ recipe.title }}</h1>
 
-                <div class="relative">
-                    <i class="fa-solid fa-ellipsis cursor-pointer" id="ellipsis-icon"></i>
-                    <div id="dropdown-menu"
-                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                           id="delete-from-category">Remove</a>
+                    <div class="relative">
+                        <i class="fa-solid fa-ellipsis cursor-pointer" id="ellipsis-icon"></i>
+                        <div id="dropdown-menu"
+                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                               id="delete-from-category">Remove</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="container mx-auto mb-8">
+                    <div class="flex flex-row justify-evenly">
+                        <img class="rounded-lg shadow-2xl dark:shadow-orange-500 mb-4 h-60 w-60" v-if="recipe.image_url"
+                             :src=recipe.image_url alt="">
                     </div>
                 </div>
 
-            </div>
-            <div class="container mx-auto mb-8">
-                <div class="flex flex-row justify-evenly">
-                    <img class="rounded-lg shadow-2xl dark:shadow-orange-500 mb-4 h-60 w-60" v-if="recipe.image_url" :src=recipe.image_url alt="">
+                <div class="grid grid-cols-2 text-center gap-4 mb-8">
+                    <div>
+                        <Panel>
+                            <h1>Instructions</h1>
+                            <h2 class="mt-4">{{ recipe.instruction }}</h2>
+                        </Panel>
+                    </div>
+                    <div>
+                        <Panel>
+                            <h1>Ingredients</h1>
+                            <ul class="mt-4">
+                                <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
+                                    <!-- Conditional rendering based on units-->
+                                    <span v-if="['Large', 'Medium', 'Small'].includes(ingredient.pivot.unit)">
+                                        {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit }}  {{ ingredient.name }}
+                                    </span>
+                                    <span v-else>
+                                         {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit }} of {{ ingredient.name }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </Panel>
+                    </div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-2 text-center gap-4 mb-8">
-                <div>
+                <!--  Where users allergies will be highlighted for them if it exists  -->
+                <div class="text-center font-medium">
                     <Panel>
-                        <h1>Instructions</h1>
-                        <h2 class="mt-4">{{recipe.instruction}}</h2>
-                    </Panel>
-                </div>
-                <div>
-                    <Panel>
-                        <h1>Ingredients</h1>
-                        <ul class="mt-4">
-                         <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">
-                             {{ingredient.pivot.quantity}} {{ingredient.pivot.unit}} of {{ingredient.name}}
-                         </li>
-                        </ul>
-                    </Panel>
-                </div>
-            </div>
-
-            <!--  Where users allergies will be highlighted for them if it exists  -->
-            <div class="text-center font-medium">
-                <Panel>
-                    <h1>Allergens</h1>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="allergen in allergens" :key="allergen" class="bg-red-500 text-white rounded-2xl px-4 py-2">
+                        <h1>Allergens</h1>
+                        <div class="flex flex-wrap gap-2">
+                        <span v-for="allergen in allergens" :key="allergen"
+                              class="bg-red-500 text-white rounded-2xl px-4 py-2">
                              {{ allergen.charAt(0).toUpperCase() + allergen.slice(1) }}
                         </span>
-                        <span v-if="allergens.length === 0">No allergens found.</span>
-                    </div>
-                </Panel>
-            </div>
-        </Panel>
-    </div>
-</AuthenticatedLayout>
+                            <span v-if="allergens.length === 0">No allergens found.</span>
+                        </div>
+                    </Panel>
+                </div>
+            </Panel>
+        </div>
+    </AuthenticatedLayout>
 </template>
 
 <style scoped>
 .container {
-    max-width:800px;
+    max-width: 800px;
 }
 </style>

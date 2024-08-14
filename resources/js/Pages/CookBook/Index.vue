@@ -161,9 +161,9 @@ onMounted(() => {
                         <div class="container mx-auto">
                             <div class="h-40 overflow-x-auto hide-scrollbar">
                                 <ul class="flex space-x-1">
-                                    <li class="flex-shrink-0 w-1/2" v-for="recipe in recipes" :key="recipe.id">
+                                    <li class="flex-shrink-0" v-for="recipe in recipes" :key="recipe.id">
                                         <Panel>
-                                            <div class="flex items-center">
+                                            <div class="flex items-center space-x-6">
                                                 <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image" class="w-20 h-20 rounded-lg mr-2">
                                                 <div class="flex-1 text-center">
                                                     <h3 class="text-lg font-bold">{{recipe.title}}</h3>

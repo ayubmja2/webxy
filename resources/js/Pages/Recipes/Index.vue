@@ -4,6 +4,7 @@ import { ref, watch, onMounted } from "vue";
 import { router, usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
 import Panel from "@/Components/Panel.vue";
+import RecipeCard from "@/Components/RecipeCard.vue";
 
 const { props } = usePage();
 const notifications = ref([]);
@@ -160,7 +161,6 @@ const toggleBookmark = async (recipe) => {
             <!-- Middle Panel: Recipe Feed -->
             <div class="col-span-1 md:col-span-2 h-full overflow-y-auto">
                 <!-- Add buttons to toggle feed between All and following -->
-
                 <div class="sticky top-0 z-10 flex justify-center space-x-4 mb-4">
                     <Panel class="container py-3 text-center space-x-8">
                         <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-orange-400 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
@@ -170,28 +170,14 @@ const toggleBookmark = async (recipe) => {
                     </Panel>
                 </div>
                 <Panel>
-                    <div v-if="recipes.data.length === 0 && searchType.value === 'recipes'" class="bg-red-200 p-4 mb-4 rounded-lg">
+                    <div v-if="recipes.data.length === 0 && searchType === 'recipes'" class="bg-red-200 p-4 mb-4 rounded-lg">
                         <p>No recipes found for "{{searchQuery}}".</p>
                     </div>
                     <div v-if="users.length === 0 && searchType.value === 'users'" class="bg-red-200 p-4 mb-4 rounded-lg">
                         <p>No users found for "{{searchQuery}}".</p>
                     </div>
-                    <div v-for="recipe in recipes.data" :key="recipe.id" v-if="searchType === 'recipes'" class="bg-green-200 p-4 mb-4 rounded-lg">
-                        <div class="flex items-center">
-                            <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image" class="w-40 h-40 rounded-lg mr-4">
-                            <div class="flex-1 text-center">
-                                <h3 class="text-lg font-bold">{{ recipe.title }}</h3>
-                                <p>{{ recipe.description }}</p>
-                                <p v-if="recipe.user">Posted by: <Link :href="`/profile/${recipe.user.id}`" class="text-blue-500">{{ recipe.user.name }}</Link></p>
-                            </div>
-                            <button class="bg-orange-500 text-white py-2 px-4 rounded-lg" @click="navigateToRecipe(recipe.id)">Info</button>
-                        </div>
-                        <div class="text-right mt-2">
-                            <button @click="toggleBookmark(recipe)">
-                                <i :class="recipe.is_bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark'" class="bookmark-icon ml-12"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <RecipeCard v-for="recipe in recipes.data" v-if="searchType === 'recipes'" :key="recipe.id" :recipe="recipe"  @toggleBookmark="toggleBookmark" :navigateToRecipe="navigateToRecipe"/>
+
                     <div v-for="user in users" :key="user.id" v-if="searchType === 'users'" class="bg-green-200 p-4 mb-4 rounded-lg">
                         <div class="flex items-center">
                             <div class="flex-1 text-center">
@@ -199,6 +185,7 @@ const toggleBookmark = async (recipe) => {
                             </div>
                         </div>
                     </div>
+
                     <div v-if="searchType === 'recipes'">
                         <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
                             Load More

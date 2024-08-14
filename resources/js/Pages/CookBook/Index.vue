@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {ref, onMounted} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Panel from "@/Components/Panel.vue";
+import RecipeCard from "@/Components/RecipeCard.vue";
 
 const {props} = usePage();
 // Categories, Recipes, and uncategorized bookmarks data from the backend
@@ -133,20 +134,9 @@ onMounted(() => {
                                 <ul class="flex flex-col space-y-2">
                                     <li v-for="bookmark in bookmarkedRecipes" :key="bookmark.id" draggable="true" @dragstart="(event) => dragBookmark(event, bookmark.id)"
                                         class="p-2 rounded-lg">
-                                       <Panel>
-                                           <div class="flex items-center">
-                                               <img v-if="bookmark.image_url" :src="bookmark.image_url" alt="Recipe Image" class="w-20 h-20 rounded-lg mr-4">
-                                               <div class="flex-1 text-center">
-                                                   <h3 class="text-lg font-bold">{{ bookmark.title }}</h3>
-                                               </div>
-                                               <button class="bg-orange-500 text-white py-2 px-4 rounded-lg" @click="navigateToRecipe(bookmark.id)">Info</button>
-                                           </div>
-                                           <div class="text-right mt-2">
-                                               <button @click="toggleBookmark(bookmark)">
-                                                   <i :class="bookmark.is_bookmarked ? 'far fa-bookmark' : 'fas fa-bookmark'" class="bookmark-icon ml-5"></i>
-                                               </button>
-                                           </div>
-                                       </Panel>
+
+                                           <RecipeCard  :recipe="bookmark" :isbookmarked="bookmark.is_bookmarked" :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark"/>
+
                                     </li>
                                 </ul>
                             </div>
@@ -160,17 +150,9 @@ onMounted(() => {
                         </div>
                         <div class="container mx-auto">
                             <div class="h-40 overflow-x-auto hide-scrollbar">
-                                <ul class="flex space-x-1">
+                                <ul class="flex space-x-4">
                                     <li class="flex-shrink-0" v-for="recipe in recipes" :key="recipe.id">
-                                        <Panel>
-                                            <div class="flex items-center space-x-6">
-                                                <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image" class="w-20 h-20 rounded-lg mr-2">
-                                                <div class="flex-1 text-center">
-                                                    <h3 class="text-lg font-bold">{{recipe.title}}</h3>
-                                                </div>
-                                                <button class="bg-orange-500 text-white py-2 px-4 rounded-lg" @click="navigateToRecipe(recipe.id)">Info</button>
-                                            </div>
-                                        </Panel>
+                                        <RecipeCard class="my-recipe" :recipe="recipe" :navigateToRecipe="navigateToRecipe" :showBookmark="false" :compact="true"/>
                                     </li>
                                 </ul>
                             </div>
@@ -205,5 +187,9 @@ onMounted(() => {
 }
 .overflow-x-auto li{
     display: inline-block;
+}
+.my-recipe{
+    max-width: 300px;
+    max-height: 100px;
 }
 </style>

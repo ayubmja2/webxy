@@ -22,7 +22,10 @@ class CookBookController extends Controller
 
         $bookmarkedRecipes = $user->bookmarkedRecipes()->whereDoesntHave('categories', function ($query) use ($user) {
             $query->where('category_recipe.user_id',$user->id);
-        })->get();
+        })->get()->map(function ($recipe){
+            $recipe->is_bookmarked = true;
+            return $recipe;
+        });
 
 //        dd($bookmarkedRecipes);
         //fetch user recipes

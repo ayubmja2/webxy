@@ -39,7 +39,7 @@ const getFractionQuantity = (quantity) => {
 const userAllergies = (props.auth.user.allergens || []).map(allergy => normalizeString(allergy));
 const recipeIngredients = recipe.ingredients.map(ingredient => normalizeString((ingredient.name)));
 
-const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(ingredient));
+const allergens =   recipeIngredients.filter(ingredient => userAllergies.includes(ingredient));
 </script>
 
 <template>

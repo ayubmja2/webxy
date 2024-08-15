@@ -32,21 +32,42 @@ const measurementUnits = ref(
 const quantities = ref(['1/4', '1/2', '1/8', '1/16', '1', '2', '3',  '4', '5']);
 
 function toFraction(decimal) {
+    if(!decimal || decimal % 1 === 0) return decimal;
+
+
     const tolerance = 1.0E-6;
     let h1 = 1, h2 = 0, k1 = 0, k2 = 1, b = decimal;
 
     do{
         let a = Math.floor(b);
-        let aux = h1; h1 = a * h1 + h2; h2 = aux;
+        let aux = h1;
+        h1 = a * h1 + h2;
+        h2 = aux;
+        aux = k1;
+        k1 = a * k1 + k2;
+        k2 = aux;
         b = 1 / (b-a);
     }while(Math.abs(decimal - h1 / k1) > decimal * tolerance);
 
-    return `${h1}/${k1}`;
+    if(h1 % k1 === 0){
+        return `${h1 /k1}`;
+    }else {
+        return `${h1}/${k1}`
+    }
 }
 
+// Function to convert fraction to decimal
 function fractionToDecimal(fraction) {
-    const [numerator, denominator] = fraction.split('/').map(Number);
-    return denominator ? numerator / denominator : parseFloat(fraction);
+    const parts = fraction.split(' ');
+    if (parts.length === 2) {
+        const wholeNumber = parseFloat(parts[0]);
+        const fractionPart = parts[1];
+        const [numerator, denominator] = fractionPart.split('/').map(Number);
+        return wholeNumber + (numerator / denominator);
+    } else {
+        const [numerator, denominator] = fraction.split('/').map(Number);
+        return denominator ? numerator / denominator : parseFloat(fraction);
+    }
 }
 
 function formatQuantity(value) {
@@ -123,7 +144,7 @@ const submit = () => {
     formData.append('_method', 'PATCH');
     form.value.ingredients.forEach((ingredient, index) => {
         formData.append(`ingredients[${index}][name]`, ingredient.name);
-        formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
+        formData.append(`ingredients[${index}][quantity]`, fractionToDecimal(ingredient.quantity));
         formData.append(`ingredients[${index}][unit]`, ingredient.unit);
     });
     router.post(`/recipes/${recipe.value.id}`, formData);

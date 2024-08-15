@@ -44,6 +44,11 @@ function toFraction(decimal) {
     return `${h1}/${k1}`;
 }
 
+function fractionToDecimal(fraction) {
+    const [numerator, denominator] = fraction.split('/').map(Number);
+    return denominator ? numerator / denominator : parseFloat(fraction);
+}
+
 function formatQuantity(value) {
     const decimalValue = parseFloat(value);
     if(!isNaN(decimalValue) && decimalValue % 1 !== 0){
@@ -166,7 +171,7 @@ const deleteRecipe = () => {
                        <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex items-center mb-2">
                            <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="mr-2 p-2 flex-1 rounded-md border-gray-300 shadow-sm">
                            <select v-model="ingredient.quantity" class="mr-4 ml-4 p-2 pr-4 pl-6 rounded-md border-gray-300 shadow-sm quantity-select">
-                               <option v-for="quantity in quantities " :key="quantity" :value="quantity">{{ quantity }}</option>
+                               <option v-for="quantity in quantities " :key="quantity" :value="fractionToDecimal(quantity)">{{ quantity }}</option>
                            </select>
 
                            <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">

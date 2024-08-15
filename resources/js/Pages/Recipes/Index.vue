@@ -78,9 +78,6 @@ const toggleFeed = (filter) => {
 };
 
 const search = async () => {
-    console.log("Searching for:", searchQuery.value); // Log search query
-    console.log("Search Type:", searchType.value); // Log search type
-
     if (searchQuery.value.trim() === '') {
         router.visit('/recipes', {
             preserveScroll: true,
@@ -88,7 +85,6 @@ const search = async () => {
             onSuccess: (page) => {
                 recipes.value = page.props.recipes;
                 users.value = []; // Clear users
-                console.log("Recipes after search:", recipes.value); // Log recipes after search
             }
         });
     } else {
@@ -100,7 +96,6 @@ const search = async () => {
                     recipes.value = page.props.recipes;
                     users.value = []; // Clear users
                     recipes.value.next_page_url = page.props.recipes.next_page_url;
-                    console.log("Recipes after search:", recipes.value); // Log recipes after search
                 }
             });
         } else if (searchType.value === 'users') {
@@ -108,7 +103,6 @@ const search = async () => {
                 const response = await axios.get(`/search/users?q=${searchQuery.value}`);
                 users.value = response.data;
                 recipes.value = { data: [] }; // Clear recipes
-                console.log("Users after search:", users.value); // Log users after search
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -126,7 +120,6 @@ watch(searchQuery, (newQuery) => {
             onSuccess: (page) => {
                 recipes.value = page.props.recipes;
                 users.value = []; // Clear users
-                console.log("Recipes after clearing search:", recipes.value); // Log recipes after clearing search
             }
         });
     }

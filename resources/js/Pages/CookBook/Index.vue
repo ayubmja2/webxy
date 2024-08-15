@@ -9,7 +9,6 @@ const {props} = usePage();
 // Categories, Recipes, and uncategorized bookmarks data from the backend
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
-const isBookmarked = ref(true);
 
 const bookmarkedRecipes = ref(Array.isArray(props.bookmarkedRecipes) ? props.bookmarkedRecipes : []);
 // Form data for creating a new category

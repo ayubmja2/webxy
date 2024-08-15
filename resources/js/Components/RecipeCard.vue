@@ -1,5 +1,5 @@
 <script setup>
-import {ref, watch, defineProps, defineEmits} from "vue";
+import {ref, watch} from "vue";
 
 
 
@@ -30,7 +30,6 @@ watch(() => props.recipe.is_bookmarked, (newVal) => {
 const handleBookmark = () => {
     if (props.toggleBookmark) {
         isBookmarked.value = !isBookmarked.value;  // Toggle the local bookmark state
-        console.log('Bookmark state:', isBookmarked.value);
         props.toggleBookmark(props.recipe);  // Call the parent component’s toggleBookmark function
     } else {
         emit('toggleBookmark', props.recipe);

@@ -97,8 +97,6 @@ const submit = async () => {
     });
 
     try {
-        const socketId = await getSocketId(); // Wait for socket_id to be available
-        // formData.append('socket_id', socketId);
         router.post('/recipes', formData);
     } catch (error) {
         console.error('Error getting socket_id:', error);

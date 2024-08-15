@@ -39,14 +39,16 @@ const showingNavigationDropdown = ref(false);
                                     Cook Book
                                 </NavLink>
                             </div>
+
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div class="flex">
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('recipes.create')" :active="route().current('recipes.create')">
                                     Post
                                 </NavLink>
                             </div>
+                            <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
                                 <Dropdown align="right" width="48">
@@ -83,7 +85,7 @@ const showingNavigationDropdown = ref(false);
                                 </Dropdown>
                             </div>
                         </div>
-
+                        </div>
                         <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
                             <button
@@ -124,7 +126,7 @@ const showingNavigationDropdown = ref(false);
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('recipes.index')" :active="route().current('recipes.index')">
-                            Dashboard
+                            Recipe
                         </ResponsiveNavLink>
                     </div>
 
@@ -147,12 +149,6 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </nav>
 
-            <!-- Page Heading -->
-<!--            <header class="bg-white shadow" v-if="$slots.header">-->
-<!--                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">-->
-<!--                    <slot name="header" />-->
-<!--                </div>-->
-<!--            </header>-->
 
             <!-- Page Content -->
             <main class="mt-14">

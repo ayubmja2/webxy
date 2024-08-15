@@ -2,11 +2,28 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {usePage, Link} from '@inertiajs/vue3';
 import Panel from "@/Components/Panel.vue";
-
+import {ref, onMounted, onBeforeUnmount} from "vue";
 
 const {props} = usePage();
 const recipe = props.recipe;
 
+const showDropdown = ref(false);
+const handleClickOutside = (event) => {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const ellipsisIcon = document.getElementById('ellipsis-icon');
+    if (dropdownMenu && ellipsisIcon && !dropdownMenu.contains(event.target) && !ellipsisIcon.contains(event.target)) {
+        showDropdown.value = false;
+    }
+};
+// Add event listener for clicks outside of the dropdown
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+});
+
+// Remove the event listener when the component is unmounted
+onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutside);
+});
 //normalization function for strings to combat case sensitivity, plural forms and extra space.
 const normalizeString = (str) => {
     return str.toLowerCase().trim().replace(/s$/, '');
@@ -24,18 +41,15 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
             <Panel class="flex flex-col mt-6">
                 <div class="grid grid-cols-3 justify-items-end font-medium mb-8">
 
-                    <Link v-if="recipe.user_id === props.auth.user.id" class="col-start-1 justify-self-start"
-                          :href="`/recipes/${recipe.id}/edit`">Edit Recipe
-                    </Link>
-
+                    <!-- Edit Recipe Link moved to the dropdown -->
                     <h1 class="col-start-2 justify-self-center">{{ recipe.title }}</h1>
 
-                    <div class="relative">
-                        <i class="fa-solid fa-ellipsis cursor-pointer" id="ellipsis-icon"></i>
+                    <div  v-if="recipe.user_id === props.auth.user.id" class="relative">
+                        <i class="fa-solid fa-ellipsis cursor-pointer" id="ellipsis-icon" @click="showDropdown = !showDropdown"></i>
                         <div id="dropdown-menu"
-                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                               id="delete-from-category">Remove</a>
+                             v-show="showDropdown"
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                            <Link v-if="recipe.user_id === props.auth.user.id" :href="`/recipes/${recipe.id}/edit`" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Recipe</Link>
                         </div>
                     </div>
 
@@ -43,7 +57,7 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
                 <div class="container mx-auto mb-8">
                     <div class="flex flex-row justify-evenly">
                         <img class="rounded-lg shadow-2xl dark:shadow-orange-500 mb-4 h-60 w-60" v-if="recipe.image_url"
-                             :src=recipe.image_url alt="">
+                             :src="recipe.image_url" alt="">
                     </div>
                 </div>
 
@@ -77,10 +91,10 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
                     <Panel>
                         <h1>Allergens</h1>
                         <div class="flex flex-wrap gap-2">
-                        <span v-for="allergen in allergens" :key="allergen"
-                              class="bg-red-500 text-white rounded-2xl px-4 py-2">
-                             {{ allergen.charAt(0).toUpperCase() + allergen.slice(1) }}
-                        </span>
+                            <span v-for="allergen in allergens" :key="allergen"
+                                  class="bg-red-500 text-white rounded-2xl px-4 py-2">
+                                 {{ allergen.charAt(0).toUpperCase() + allergen.slice(1) }}
+                            </span>
                             <span v-if="allergens.length === 0">No allergens found.</span>
                         </div>
                     </Panel>

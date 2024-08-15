@@ -104,8 +104,11 @@
                 $ingredientName = ucfirst(strtolower($ingredientData['name']));
                 $ingredient = Ingredient::firstOrCreate(['name' => $ingredientName]);
 
+                //convert the quantity to a decimal if it's a fraction.
+                $quantity = fractionToDecimal($ingredientData['quantity']);
+
                 $recipe->ingredients()->attach($ingredient->id, [
-                    'quantity' => $ingredientData['quantity'],
+                    'quantity' => $quantity,
                     'unit' => $ingredientData['unit']
                 ]);
             }

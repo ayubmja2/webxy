@@ -38,7 +38,7 @@ function isFraction(value) {
 
 // Function to convert decimal to fraction
 function toFraction(decimal) {
-    if (!decimal || decimal % 1 === 0) return decimal.toString(); // return whole numbers as is
+    if (!decimal || decimal % 1 === 0) return decimal.toString();
 
     const tolerance = 1.0E-6;
     let h1 = 1, h2 = 0, k1 = 0, k2 = 1, b = decimal;
@@ -57,10 +57,18 @@ function toFraction(decimal) {
     if (h1 % k1 === 0) {
         return `${h1 / k1}`;
     } else {
-        return `${h1}/${k1}`;
+        // If the fraction is an improper fraction, return as a mixed fraction
+        const wholePart = Math.floor(h1 / k1);
+        const remainder = h1 % k1;
+        if (wholePart === 0) {
+            return `${h1}/${k1}`;
+        } else if (remainder === 0) {
+            return `${wholePart}`;
+        } else {
+            return `${wholePart} ${remainder}/${k1}`;
+        }
     }
 }
-
 // Function to convert fraction or mixed fraction to decimal
 function fractionToDecimal(fraction) {
     let parts = fraction.split(' ');
@@ -78,8 +86,12 @@ function fractionToDecimal(fraction) {
 
 
 function formatQuantity(value) {
+    if (typeof value === 'string' && value.includes(' ')) {
+        // Handle mixed fraction like "1 1/2"
+        return value;
+    }
     const decimalValue = parseFloat(value);
-    if(!isNaN(decimalValue) && decimalValue % 1 !== 0){
+    if (!isNaN(decimalValue) && decimalValue % 1 !== 0) {
         return toFraction(decimalValue);
     }
     return value;

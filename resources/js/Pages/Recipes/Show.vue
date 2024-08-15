@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {usePage, Link} from '@inertiajs/vue3';
 import Panel from "@/Components/Panel.vue";
 import {ref, onMounted, onBeforeUnmount} from "vue";
-
+import Fraction from "fraction.js";
 const {props} = usePage();
 const recipe = props.recipe;
 
@@ -29,6 +29,13 @@ const normalizeString = (str) => {
     return str.toLowerCase().trim().replace(/s$/, '');
 }
 
+const getFractionQuantity = (quantity) => {
+    try{
+        return new Fraction(quantity).toFraction(true); //convert to fraction
+    }catch (error){
+        return quantity; //fallback to original if conversion fails
+    }
+}
 const userAllergies = (props.auth.user.allergens || []).map(allergy => normalizeString(allergy));
 const recipeIngredients = recipe.ingredients.map(ingredient => normalizeString((ingredient.name)));
 
@@ -75,10 +82,10 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
                                 <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
                                     <!-- Conditional rendering based on units-->
                                     <span v-if="['Large', 'Medium', 'Small'].includes(ingredient.pivot.unit)">
-                                        {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit }}  {{ ingredient.name }}
+                                        {{ getFractionQuantity(ingredient.pivot.quantity) }} {{ getFractionQuantity(ingredient.pivot.unit) }}  {{ getFractionQuantity(ingredient.name) }}
                                     </span>
                                     <span v-else>
-                                         {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit }} of {{ ingredient.name }}
+                                          {{ getFractionQuantity(ingredient.pivot.quantity) }} {{ getFractionQuantity(ingredient.pivot.unit) }}  {{ getFractionQuantity(ingredient.name) }}
                                     </span>
                                 </li>
                             </ul>

@@ -170,9 +170,8 @@ const deleteRecipe = () => {
 
                        <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex items-center mb-2">
                            <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="mr-2 p-2 flex-1 rounded-md border-gray-300 shadow-sm">
-                           <select v-model="ingredient.quantity" class="mr-4 ml-4 p-2 pr-4 pl-6 rounded-md border-gray-300 shadow-sm quantity-select">
-                               <option v-for="quantity in quantities " :key="quantity" :value="fractionToDecimal(quantity)">{{ quantity }}</option>
-                           </select>
+                           <!-- Custom Quantity Input Field -->
+                           <input type="text" v-model="ingredient.quantity" placeholder="e.g., 1 1/2" class="mr-4 p-2 rounded-md border-gray-300 shadow-sm">
 
                            <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">
                                <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>

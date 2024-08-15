@@ -31,7 +31,26 @@ const measurementUnits = ref(
 
 const quantities = ref(['1/4', '1/2', '1/8', '1/16', '1', '2', '3',  '4', '5']);
 
+function toFraction(decimal) {
+    const tolerance = 1.0E-6;
+    let h1 = 1, h2 = 0, k1 = 0, k2 = 1, b = decimal;
 
+    do{
+        let a = Math.floor(b);
+        let aux = h1; h1 = a * h1 + h2; h2 = aux;
+        b = 1 / (b-a);
+    }while(Math.abs(decimal - h1 / k1) > decimal * tolerance);
+
+    return `${h1}/${k1}`;
+}
+
+function formatQuantity(value) {
+    const decimalValue = parseFloat(value);
+    if(!isNaN(decimalValue) && decimalValue % 1 !== 0){
+        return toFraction(decimalValue);
+    }
+    return value;
+}
 // Initialize form with default values
 const form = ref({
     title: recipe.value.title || '',
@@ -40,7 +59,7 @@ const form = ref({
     image_url: null,
     ingredients: (recipe.value.ingredients || []).map(ingredient => ({
         name: ingredient.name,
-        quantity: ingredient.pivot.quantity,
+        quantity: formatQuantity(ingredient.pivot.quantity),
         unit: ingredient.pivot.unit
     }))
 });

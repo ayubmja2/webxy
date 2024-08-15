@@ -64,7 +64,7 @@ const form = ref({
     image_url: null,
     ingredients: (recipe.value.ingredients || []).map(ingredient => ({
         name: ingredient.name,
-        quantity: formatQuantity(ingredient.pivot.quantity),
+        quantity: ingredient.pivot.quantity,
         unit: ingredient.pivot.unit
     }))
 });

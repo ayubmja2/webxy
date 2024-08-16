@@ -1,4 +1,4 @@
-name: Deploy to Staging
+name: Deploy to staging
 
 on:
   push:
@@ -8,25 +8,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # Specify the correct PHP version here
+        tools: composer
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0' # or your specific PHP version
+    - name: Install Dependencies
+      run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+    
+    - name: Run Tests
+      run: php artisan test
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Run tests
-        run: php artisan test
-
-      - name: Deploy to Forge
-        env:
-          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
-        run: |
-          curl -s -X POST "https://forge.laravel.com/api/v1/servers/{server_id}/sites/{site_id}/deploy" \
-          -H "Authorization: Bearer ${FORGE_API_TOKEN}" \
-          -H "Accept: application/json"
+    - name: Deploy to Forge
+      env:
+        FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+        FORGE_SERVER_ID: ${{ secrets.FORGE_SERVER_ID }}
+        FORGE_SITE_ID: ${{ secrets.FORGE_SITE_ID }}
+      run: |
+        curl -X POST "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deploy" \
+        -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}"

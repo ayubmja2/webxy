@@ -6,3 +6,5 @@ This can be thought as a food social network.
 
 ## The tech stack is: 
 Laravel 11, vue3, Inertia.js, Tailwindcss, Object DB on Digital Ocean Spaces, and using pusher for realtime updates.
+
+Currently, this project as a staging and production server.

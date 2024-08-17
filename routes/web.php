@@ -2,6 +2,7 @@
 
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
+    use App\Http\Controllers\MailgunWebhookController;
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
     use Illuminate\Foundation\Application;
@@ -36,6 +37,8 @@
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     Route::middleware(['auth', 'verified'])->group(function () {
+
+        // Main application routes.
 
         // Profile Route
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -82,6 +85,10 @@
         Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
         Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
 
+
+//        External links and services
+
+        Route::post('/webhook/mailgun/clicked', [MailgunWebhookController::class, 'handleClicked']);
         //Fetch unread notifications
         Route::get('/api/notifications/unread', function(){
             return auth()->user()->unreadNotifications;

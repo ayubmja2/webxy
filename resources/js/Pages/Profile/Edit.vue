@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref } from 'vue';
-import { usePage, Link } from '@inertiajs/vue3';
+import {ref} from 'vue';
+import {usePage, Link} from '@inertiajs/vue3';
 import axios from 'axios';
 import Panel from "@/Components/Panel.vue";
 import DeleteUserForm from "@/Pages/Profile/Partials/DeleteUserForm.vue";
@@ -10,15 +10,15 @@ import UpdateProfileInformationForm from "@/Pages/Profile/Partials/UpdateProfile
 
 
 defineProps({
-    mustVerifyEmail : {
-        type:Boolean,
+    mustVerifyEmail: {
+        type: Boolean,
     },
     status: {
         type: String
     }
 });
 
-const { props } = usePage();
+const {props} = usePage();
 
 const coverArt = ref(props.user.cover_image_url || '');
 const profileImage = ref(props.user.profile_image_url || '');
@@ -29,11 +29,14 @@ const currentSection = ref('public-profile'); // State variable to track the cur
 
 const showBioModal = ref(false);
 const bio = ref(props.user.bio || '');
+
 const followers = ref(props.followers || []);
 const followersCount = ref(props.followersCount || 0);
 const recipeCount = ref(props.recipeCount || 0);
+const following = ref(props.following || []);
 
-console.log(recipeCount);
+const currentFollowerSection = ref('following');
+
 const openBioModal = () => {
     showBioModal.value = true;
 };
@@ -42,26 +45,37 @@ const closeBioModal = () => {
     showBioModal.value = false;
 };
 
-const saveBio = async() => {
-    try{
+const saveBio = async () => {
+    try {
         await axios.post('/profile/update-bio', {bio: bio.value});
         props.user.bio = bio.value;
         closeBioModal();
-    }catch (error){
+    } catch (error) {
         alert('Failed to update bio.')
     }
 };
 
 //fetch followers when the component is mounted
-const fetchFollowers = async() => {
-    try{
+const fetchFollowers = async () => {
+    try {
         const response = await axios.get(`/profile/${props.user.id}/followers`);
         followers.value = response.data.followers;
-    }catch (error) {
+    } catch (error) {
         console.log('Error fetching followers:');
     }
 };
+const fetchFollowing = async() => {
+    try{
+        const response = await axios.get(`/profile/${props.user.id}/following`);
+        console.log(response);
+        following.value = response.data.following;
+    }catch(error) {
+        console.log('Error fetching following:');
+    }
+}
 fetchFollowers();
+fetchFollowing();
+
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
 };
@@ -111,6 +125,10 @@ const switchSection = (section) => {
     currentSection.value = section;
 };
 
+//switch between "Following" and "Followers
+const switchFollowerSection = (section) => {
+    currentFollowerSection.value = section;
+}
 // Allergies handling
 const allergiesInput = ref('');
 const allergies = ref(props.user.allergens || []);
@@ -143,22 +161,24 @@ const deleteAllergy = async (allergy) => {
     }
 };
 
-const followUser = async() => {
-    try{
+const followUser = async () => {
+    try {
         const response = await axios.post(`/profile/${props.user.id}/follow`);
         props.isFollowing = true;
-    }catch(error){
+    } catch (error) {
         console.log('Error following user');
     }
 };
-const unfollowUser = async() => {
-    try{
+const unfollowUser = async () => {
+    try {
         const response = await axios.post(`/profile/${props.user.id}/unfollow`);
         props.isFollowing = false;
-    }catch (error) {
+    } catch (error) {
         console.log('Error unfollowing user:');
     }
 };
+
+
 </script>
 
 <template>
@@ -170,7 +190,8 @@ const unfollowUser = async() => {
                     <img :src="profileImage || '/default-profile.jpg'" alt="profile image"
                          class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer">
                     <input type="file" @change="onProfileImageChange" accept="image/*"
-                           class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full" v-if="props.isOwnProfile">
+                           class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full"
+                           v-if="props.isOwnProfile">
                 </div>
             </div>
             <div class="absolute top-0 right-0 m-4" v-if="props.isOwnProfile">
@@ -185,101 +206,53 @@ const unfollowUser = async() => {
                 </div>
             </div>
         </div>
-
-        <div class="container mx-auto mt-4">
-            <div class="flex flex-col">
-                <Panel>
+        <div class="px-10">
+            <!--  Profile Navigation -->
+            <div class="mx-auto mt-4">
+                <Panel class="p-6 rounded-lg shadow-xl transform transition-transform">
                     <div class="container mx-auto">
-                        <ul class="flex flex-row justify-evenly">
+                        <ul class="flex justify-evenly">
                             <li>
                                 <button @click="switchSection('public-profile')"
-                                        class="bg-amber-500 rounded-2xl p-1 px-4">Public Profile
+                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                    Profile
                                 </button>
                             </li>
                             <li>
-                                <button @click="switchSection('account-info')"
-                                        class="bg-amber-500 rounded-2xl p-1 px-4" v-if="props.isOwnProfile">Account Info
+                                <button @click="switchSection('account-info')" v-if="props.isOwnProfile"
+                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                    Account Info
                                 </button>
                             </li>
                             <li>
-                                <button @click="switchSection('settings')" class="bg-amber-500 rounded-2xl p-1 px-4"
-                                        v-if="props.isOwnProfile">
+                                <button @click="switchSection('settings')" v-if="props.isOwnProfile"
+                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                     Settings
                                 </button>
                             </li>
                         </ul>
                     </div>
                 </Panel>
+            </div>
+            <!-- Main Body -->
 
-                <!-- Sections -->
-                <div v-if="currentSection === 'account-info' && props.isOwnProfile" class="grid grid-cols-2 p-2">
-                    <!-- Allergies Section-->
-                    <div class="container">
-                        <Panel class="space-y-2 w-1/2 mx-auto">
-                            <div class="text-center font-medium text-2xl">
-                                <h1>Allergies</h1>
-                            </div>
-                            <div class="container mx-auto flex flex-col space-y-4 p-6">
-                                <input type="text" v-model="allergiesInput" placeholder="wheat, soy, eggs"
-                                       class="rounded-xl">
-                                <button @click="saveAllergies" class="bg-amber-500 p-2 rounded-xl">Save</button>
-                            </div>
-                        </Panel>
+            <div v-if="currentSection === 'public-profile'" class="mt-4">
+                <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
+                    <div class="text-center font-medium text-2xl mb-6">
+                        <h1>Profile</h1>
                     </div>
-                    <!-- Account Stats section -->
-                    <div class="container">
-                        <Panel class="w-3/4 mx-auto">
-                            <div class="text-center font-medium text-2xl mb-3">
-                                <h1>Account Stats</h1>
-                            </div>
-                            <div class="flex flex-row justify-center">
-                               <div class="text-center mb-4">
-                                   <p>You have created {{recipeCount}} recipes.</p>
-                                   <p>You have {{followersCount}} followers.</p>
-                               </div>
-                            </div>
-                        </Panel>
-                    </div>
-                </div>
-
-                <!-- Your Food Allergies Section -->
-                <div v-if="currentSection === 'account-info' && props.isOwnProfile"
-                     class="container row-start-2 col-span-2 mt-6">
-                    <div class="flex flex-col">
-                        <Panel>
-                            <div class="text-center font-medium text-2xl">
-                                <h1>Your Food Allergies</h1>
-                            </div>
-                            <div class="container mt-8">
-                                <div>
-                                    <!-- This is where the allergies will render after form submission.-->
-                                    <ul class="grid grid-rows-4 grid-flow-col gap-4 justify-items-center">
-                                        <li v-for="allergy in allergies" :key="allergy"
-                                            class="relative bg-amber-500 rounded-2xl p-2 px-4">
-                                            <span>{{ allergy.charAt(0).toUpperCase() + allergy.slice(1) }}</span>
-                                            <button @click="deleteAllergy(allergy)"
-                                                    class="absolute top-1 right-1 text-red-600 font-bold">X
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </Panel>
-                    </div>
-                </div>
-
-                <div v-if="currentSection === 'public-profile'">
-                    <!-- Public Profile Content Here -->
-                    <Panel>
-                        <div class="text-center font-medium text-2xl">
-                            <h1>Public Profile</h1>
-                        </div>
-                        <div class="container mt-8">
+                    <div class="mt-8">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <!-- This is where the user's bio and public profile information will render -->
-                                <p>{{ props.user.bio  || 'No bio available.'}}</p>
-                                <button v-if="props.isOwnProfile" @click="openBioModal" class="bg-blue-500 text-white p-2 rounded">Edit Bio</button>
-                                <!-- Display Follow/Unfollow button if viewing another user's profile -->
+                                <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
+                                    <div class="font-medium text-center">
+                                        <p>{{ props.user.bio || 'No bio available' }}</p>
+                                    </div>
+                                </Panel>
+                                <hr class="border-orange-400 mt-4">
+                                <button v-if="props.isOwnProfile" @click="openBioModal"
+                                        class="bg-orange-400 text-white p-2 rounded mt-2">Edit Bio
+                                </button>
                                 <div v-if="props.authUser.id !== props.user.id">
                                     <button v-if="!props.isFollowing" @click="followUser"
                                             class="bg-blue-500 text-white p-2 rounded">Follow
@@ -289,46 +262,120 @@ const unfollowUser = async() => {
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </Panel>
-                    <!-- Modal for Bio Editing  -->
-                    <div v-if="showBioModal" class="fixed z-10 inset-0 overflow-y-auto">
-                        <div class="flex items-center justify-center min-h-screen">
-                            <div class="bg-white p-6 rounded-center min-h-screen">
-                                <h2 class="text-xl mb-4">Edit Bio</h2>
-                                <textarea v-model="bio" class="w-full p-2 border rounded mb-4" rows="4"></textarea>
-                                <button @click="saveBio" class="bg-green-500 text-white p-2 rounded">Save</button>
-                                <button @click="closeBioModal" class="bg-red-500 text-white p-2 rounded">Cancel</button>
+
+                            <div>
+                                <div class="container mx-auto">
+                                    <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
+                                        <ul class="flex justify-evenly mb-4">
+                                            <li>
+                                                <button @click="switchFollowerSection('followers')" class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">Followers</button>
+                                            </li>
+                                            <li>
+                                                <button @click="switchFollowerSection('following')" class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">Following</button>
+                                            </li>
+                                        </ul>
+                                        <div class="container mx-auto w-3/4">
+                                            <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
+                                                <ul v-if="currentFollowerSection === 'followers'" class="list-disc list-inside">
+                                                    <li>Your followers</li>
+                                                    <li v-for="user in followers" :key="user.id">{{user.name}}</li>
+                                                </ul>
+
+                                                <ul v-if="currentFollowerSection === 'following'" class="list-disc list-inside">
+                                                    <li>Your following</li>
+                                                    <li v-for="user in following" :key="user.id">{{user.name}}</li>
+                                                </ul>
+                                            </Panel>
+                                        </div>
+                                    </Panel>
+                                </div>
                             </div>
+
                         </div>
                     </div>
-                <!--   Followers List Section -->
-                    <Panel>
-                        <div class="text-center font-medium text-sxl">
-                            <h1>Followers</h1>
-                        </div>
-                        <div class="container mt-8">
-                            <ul v-for="follower in followers" :key="follower.id" class="p-2">
-                                <Link :href="`/profile/${follower.id}`" class="text-blue-500">{{follower.name}}</Link>
-                            </ul>
-                        </div>
-                    </Panel>
-                </div>
+                </Panel>
+            </div>
 
-                <div v-if="currentSection === 'settings' && props.isOwnProfile">
-                    <!-- Settings Content Here -->
-                    <Panel>
-                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                            <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" class="max-w-xl"/>
-                        </div>
-                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                            <UpdatePasswordForm class="max-w-xl"/>
-                        </div>
-                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                            <DeleteUserForm class="max-w-xl"/>
+            <div v-if="currentSection === 'account-info' && props.isOwnProfile" class="grid grid-cols-2 p-2 mt-3 gap-4">
+                <!--   Allergies sections   -->
+                <div>
+                    <div class="mb-3">
+                        <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2 w-3/4 mx-auto">
+                            <div class="text-center font-medium text-2xl">
+                                <h1>Allergies</h1>
+                            </div>
+                            <div class="flex flex-col space-y-4 p-6 mx-auto">
+                                <input type="text" v-model="allergiesInput" @keyup.enter="saveAllergies"
+                                       placeholder="wheat, soy, eggs" class="rounded-xl">
+                                <button @click="saveAllergies"
+                                        class="bg-gradient-to-b from-orange-400 to-orange-400  p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-mediump-2 rounded-xl">
+                                    Save
+                                </button>
+                            </div>
+                        </Panel>
+                    </div>
+                    <div class="container mx-auto row-start-2 row-span-2">
+                        <Panel class="p-6 rounded-lg shadow-xl transform transition-transform">
+                            <div class="text-center font-medium text-2xl">
+                                <h1>Your Food Allergies</h1>
+                            </div>
+                            <div class="p-7 h-28 overflow-hidden overflow-x-scroll">
+                                <ul class="grid grid-rows-1 grid-flow-col gap-3 justify-items-center space-x-1">
+                                    <li v-for="allergy in allergies" :key="allergy"
+                                        class="relative font-medium bg-orange-400 rounded-xl p-3 px-7 min-w-[120px] text-center  shadow-md">
+                                        <span>{{ allergy.charAt(0).toUpperCase() + allergy.slice(1) }}</span>
+                                        <button @click="deleteAllergy(allergy)"
+                                                class="absolute top-1 right-1 text-red-600 font-bold">X
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Panel>
+                    </div>
+                </div>
+                <div class="container row-span-2">
+                    <Panel class="rounded-lg shadow-xl transform transition-transform">
+                        <div class="grid grid-cols-1 h-96 font-medium text-2xl">
+                            <div>
+                                <div class="text-center">
+                                    <h3>Account Stats</h3>
+                                </div>
+                                <div class="container mt-2">
+                                    <Panel class="rounded-lg shadow-xl transform transition-transform">
+                                        <div class="font-normal text-xl">
+                                            <p>You have created {{ recipeCount }} recipes so far way to go !</p>
+                                            <p>You have {{ followersCount }} followers !</p>
+                                        </div>
+                                    </Panel>
+                                </div>
+                            </div>
                         </div>
                     </Panel>
                 </div>
+            </div>
+            <div v-if="currentSection === 'settings' && props.isOwnProfile" class="mt-2">
+                <Panel class="rounded-lg shadow-xl transform transition-transform">
+                    <div class="text-center mb-5 font-medium text-2xl">
+                        <h1>Account Settings</h1>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 px-8 pb-8">
+                        <Panel class="rounded-lg shadow-xl transform transition-transform">
+                            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                                <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status"/>
+                            </div>
+                        </Panel>
+                        <Panel class="rounded-lg shadow-xl transform transition-transform">
+                            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                                <UpdatePasswordForm/>
+                            </div>
+                        </Panel>
+                        <Panel class="rounded-lg shadow-xl transform transition-transform">
+                            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                                <DeleteUserForm/>
+                            </div>
+                        </Panel>
+                    </div>
+                </Panel>
             </div>
         </div>
     </AuthenticatedLayout>

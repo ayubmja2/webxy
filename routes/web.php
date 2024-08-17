@@ -54,7 +54,8 @@
         Route::post('/profile/{user}/unfollow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
         Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
         Route::post('profile/update-bio', [ProfileController::class, 'updateBio'])->name('profile.update-bio');
-        Route::get('/profile/{user}/followers', [ProfileController::class, 'getFollowers'])->name('profile.followers');
+        Route::get('/profile/{user}/followers', [ProfileController::class, 'getFollowers']);
+        Route::get('/profile/{user}/following', [ProfileController::class, 'getFollowing']);
 
 
         // Category Routes

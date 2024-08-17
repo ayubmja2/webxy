@@ -30,6 +30,7 @@ class ProfileController extends Controller
         //fetch followers
         $followers = $user->followers;
 
+        $following = $user->following;
         //fetch recipe count
 
         $recipeCount = $user->recipes()->count();
@@ -43,6 +44,7 @@ class ProfileController extends Controller
             'isFollowing' => $isFollowing,
             'isOwnProfile' => $isOwnProfile,
             'followers' => $followers,
+            'following' => $following,
             'followersCount' => count($followers),
             'recipeCount' => $recipeCount,
         ]);
@@ -183,8 +185,12 @@ class ProfileController extends Controller
     }
 
     public function getFollowers(User $user) {
-        $followers = $user->following()->get();
+        $followers = $user->followers()->get();
         return response()->json(['followers' => $followers]);
+    }
+    public function getFollowing(User $user) {
+        $following = $user->following()->get();
+        return response()->json(['following' => $following]);
     }
 
     /**

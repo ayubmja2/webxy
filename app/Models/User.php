@@ -81,7 +81,7 @@
         }
 
         public function isFollowing(User $user){
-            return $this->following()->where('following_id', $user->id)->exists();
+            return $this->following()->where('follow_id', $user->id)->exists();
         }
 
         public function likes()

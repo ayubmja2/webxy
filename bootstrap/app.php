@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ExemptWebhookCsrf::class
         ]);
         //
+        $middleware->validateCsrfTokens(except: [
+            'mailgun/*',
+            'webhook/mailgun/clicked',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

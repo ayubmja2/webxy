@@ -36,6 +36,10 @@
         return back()->with('message', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+    //        External links and services
+
+    Route::post('/webhook/mailgun/clicked', [MailgunWebhookController::class, 'handleClicked']);
+
     Route::middleware(['auth', 'verified'])->group(function () {
 
         // Main application routes.
@@ -85,10 +89,6 @@
         Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
         Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
 
-
-//        External links and services
-
-        Route::post('/webhook/mailgun/clicked', [MailgunWebhookController::class, 'handleClicked']);
         //Fetch unread notifications
         Route::get('/api/notifications/unread', function(){
             return auth()->user()->unreadNotifications;

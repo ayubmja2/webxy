@@ -206,10 +206,10 @@ const navigateToUserProfile = (username) => {
 <template>
     <AuthenticatedLayout>
         <div class="relative">
-            <img :src="coverArt || '/default-cover.jpg'" alt="cover art" class="w-full h-60 object-cover">
+            <img :src="coverArt" alt="cover art" class="w-full h-60 object-cover">
             <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center mt-4">
                 <div class="relative">
-                    <img :src="profileImage || '/default-profile.jpg'" alt="profile image"
+                    <img :src="profileImage" alt="profile image"
                          class="w-24 h-24 rounded-full border-4 border-white object-cover cursor-pointer">
                     <input type="file" @change="onProfileImageChange" accept="image/*"
                            class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full"

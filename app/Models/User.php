@@ -52,6 +52,13 @@
                 'password' => 'hashed',
             ];
         }
+
+        public function getProfileImageUrlAttribute(){
+            return $this->profile_image_url ? $this->profile_image_url : asset('images/placeholders/default-profile.png');
+        }
+        public function getProfileCoverImageUrlAttribute(){
+            return $this->profile_cover_url ? $this->profile_cover_url : asset('images/placeholders/default-cover.png');
+        }
         public function recipes(){
             return $this->hasMany(Recipe::class);
         }

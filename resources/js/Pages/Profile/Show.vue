@@ -24,8 +24,8 @@ const {props} = usePage();
 const recipes = ref(props.recipes || []);
 
 
-const coverArt = ref(props.user.cover_image_url || '');
-const profileImage = ref(props.user.profile_image_url || '');
+const coverArt = ref(props.user.cover_image_url || '/images/placeholders/default-cover.png');
+const profileImage = ref(props.user.profile_image_url || '/images/placeholders/default-profile.png');
 const newCoverImage = ref(null);
 const newProfileImage = ref(null);
 const showDropdown = ref(false);

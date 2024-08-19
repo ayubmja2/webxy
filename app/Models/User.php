@@ -57,14 +57,14 @@
         {
             return $this->attributes['profile_image_url']
                 ? asset($this->attributes['profile_image_url'])
-                : asset('/images/placeholders/default-profile_placeholder.png');
+                : asset('/images/placeholders/default-profile.png');
         }
 
         public function getCoverImageUrlAttribute()
         {
             return $this->attributes['cover_image_url']
                 ? asset($this->attributes['cover_image_url'])
-                : asset('/images/placeholders/default-cover_placeholder.png');
+                : asset('/images/placeholders/default-cover.png');
         }
         public function recipes(){
             return $this->hasMany(Recipe::class);

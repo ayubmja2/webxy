@@ -62,8 +62,8 @@
 
         public function getCoverImageUrlAttribute()
         {
-            return $this->attributes['cover_image_url']
-                ? asset($this->attributes['cover_image_url'])
+            return $this->attributes['profile_cover_url']
+                ? asset($this->attributes['profile_cover_url'])
                 : asset('/images/placeholders/default-cover.png');
         }
         public function recipes(){

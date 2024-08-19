@@ -1,5 +1,5 @@
 <script setup>
-
+import {computed} from "vue";
 const props = defineProps({
     user: {
         type: Object,
@@ -7,6 +7,12 @@ const props = defineProps({
     },
     navigateToUserProfile:Function
 });
+
+// Fallback to default profile image if profile_image_url is empty or null
+const profileImageUrl = computed(() => {
+    return props.user.profile_image_url || '/images/placeholders/default-profile.png';
+});
+
 </script>
 
 <template>
@@ -16,7 +22,7 @@ const props = defineProps({
             <div class="grid grid-cols-2">
                 <div class="flex flex-col justify-self-center">
                     <div class="mx-auto">
-                        <img :src="user.profile_image_url" alt="Recipe Image"
+                        <img :src="profileImageUrl" alt="Recipe Image"
                              class="w-fit md:w-40  object-cover rounded-xl bg-orange-400 shadow-2xl dark:shadow-orange-300 mb-8">
                     </div>
                 </div>

@@ -72,7 +72,7 @@ class ProfileController extends Controller
 //    }
 
     public function show($username){
-        $user = User::where('name', $username)->orWhere('slug', $username)->firstOrFail();
+        $user = User::where('name', $username)->firstOrFail();
         $authUser = Auth::user();
         $isOwnProfile = $authUser && $authUser->id === $user->id;
 

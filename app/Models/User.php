@@ -55,12 +55,16 @@
 
         public function getProfileImageUrlAttribute()
         {
-            return $this->attributes['profile_image_url'] ?? '/images/placeholders/profile_placeholder.png';
+            return $this->attributes['profile_image_url']
+                ? asset($this->attributes['profile_image_url'])
+                : asset('/images/placeholders/default-profile_placeholder.png');
         }
 
         public function getCoverImageUrlAttribute()
         {
-            return $this->attributes['cover_image_url'] ?? '/images/placeholders/cover_placeholder.png';
+            return $this->attributes['cover_image_url']
+                ? asset($this->attributes['cover_image_url'])
+                : asset('/images/placeholders/default-cover_placeholder.png');
         }
         public function recipes(){
             return $this->hasMany(Recipe::class);

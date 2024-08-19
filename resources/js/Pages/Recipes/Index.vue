@@ -1,53 +1,54 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, watch, onMounted } from "vue";
-import { router, usePage, Link } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
+import UserCard from "@/Components/UserCard.vue";
 
 const { props } = usePage();
 const notifications = ref([]);
 const newUploads = ref(0);
-
+const searchCompleted = ref(false);
+const isSearching = ref(false);
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
-const users = ref([]);
+const users = ref(props.users);
 const searchQuery = ref(props.query || '');
 const searchType = ref('recipes');
 const showFollowing = ref(props.showFollowing);
 
-
-
 const fetchUnreadNotifications = async () => {
-    try{
+    try {
         const response = await axios.get('/api/notifications/unread');
         notifications.value = response.data;
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 };
 
 const showNewUploads = async () => {
-    try{
+    try {
         await axios.post('/api/notifications/read');
         notifications.value = [];
         toggleFeed('following');
         newUploads.value = 0;
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
-}
+};
 
 onMounted(() => {
     fetchUnreadNotifications();
+
     Echo.private('recipes')
         .listen('RecipeUploaded', (event) => {
             fetchUnreadNotifications();
         }).notification((notification) => {
         notifications.value.push(notification)
         notifications.value = [...notifications.value]
-    })
+    });
 });
 
 const loadMore = () => {
@@ -59,6 +60,16 @@ const loadMore = () => {
                 recipes.value.data = recipes.value.data.concat(page.props.recipes.data);
                 recipes.value.next_page_url = page.props.recipes.next_page_url;
                 history.replaceState(null, '', `/recipes`);
+            }
+        });
+    } else if (searchType.value === 'users' && users.value.next_page_url) {
+        router.get(users.value.next_page_url, {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                users.value.data = users.value.data.concat(page.props.users.data);
+                users.value.next_page_url = page.props.users.next_page_url;
+                history.replaceState(null, '', `/profile`);
             }
         });
     }
@@ -77,51 +88,87 @@ const toggleFeed = (filter) => {
     });
 };
 
-const search = async () => {
-    if (searchQuery.value.trim() === '') {
-        router.visit('/recipes', {
+// Watch for changes to the searchType
+watch(searchType, async () => {
+    searchQuery.value = '';
+
+    if (searchType.value === 'recipes') {
+        await router.visit('/recipes', {
             preserveScroll: true,
             preserveState: true,
             onSuccess: (page) => {
                 recipes.value = page.props.recipes;
-                users.value = []; // Clear users
+                users.value = { data: [] }; // Clear users
+                searchCompleted.value = false;
             }
         });
-    } else {
+    } else if (searchType.value === 'users') {
+        await router.visit('/recipes', {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                users.value = page.props.users;
+                recipes.value = { data: [] }; // Clear recipes
+                searchCompleted.value = false;
+            }
+        });
+    }
+});
+
+// Updated search function
+const search = async () => {
+    searchCompleted.value = false;
+    isSearching.value = true;
+
+    if (searchQuery.value.trim() === '') {
+        // Reload the feed based on searchType
         if (searchType.value === 'recipes') {
-            router.get('/search', { query: searchQuery.value }, {
-                preserveState: true,
+            await router.visit('/recipes', {
                 preserveScroll: true,
+                preserveState: true,
                 onSuccess: (page) => {
                     recipes.value = page.props.recipes;
-                    users.value = []; // Clear users
-                    recipes.value.next_page_url = page.props.recipes.next_page_url;
+                    users.value = { data: [] }; // Clear users
+                    searchCompleted.value = false;
+                    isSearching.value = false;
                 }
             });
         } else if (searchType.value === 'users') {
-            try {
-                const response = await axios.get(`/search/users?q=${searchQuery.value}`);
-                users.value = response.data;
-                recipes.value = { data: [] }; // Clear recipes
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
+            await router.visit('/recipes', {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: (page) => {
+                    users.value = page.props.users;
+                    recipes.value = { data: [] }; // Clear recipes
+                    searchCompleted.value = false;
+                    isSearching.value = false;
+                }
+            });
         }
+    } else {
+        // Perform the search
+        await router.get('/search', { query: searchQuery.value, type: searchType.value }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                if (searchType.value === 'recipes') {
+                    recipes.value = page.props.recipes;
+                    users.value = { data: [] }; // Clear users
+                } else if (searchType.value === 'users') {
+                    users.value = page.props.users;
+                    recipes.value = { data: [] }; // Clear recipes
+                }
+                isSearching.value = false;
+                searchCompleted.value = true;
+            }
+        });
     }
 };
 
-//watch for changes to the searchQuery and reload
-
+// Watch for changes to the searchQuery and reload
 watch(searchQuery, (newQuery) => {
     if (newQuery.trim() === '') {
-        router.visit('/recipes', {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: (page) => {
-                recipes.value = page.props.recipes;
-                users.value = []; // Clear users
-            }
-        });
+        search();
     }
 });
 
@@ -129,6 +176,9 @@ const navigateToRecipe = (id) => {
     router.get(`/recipes/${id}`);
 };
 
+const navigateToUserProfile = (username) => {
+    router.get(`/profile/${username}`);
+}
 const navigateToCategory = (id) => {
     router.get(`/categories/${id}`);
 };
@@ -145,7 +195,6 @@ const toggleBookmark = async (recipe) => {
         console.log('Error bookmarking recipe:', error);
     }
 };
-
 </script>
 
 <template>
@@ -163,22 +212,14 @@ const toggleBookmark = async (recipe) => {
                     </Panel>
                 </div>
                 <Panel>
-                    <div v-if="recipes.data.length === 0 && searchType === 'recipes'" class="bg-red-200 p-4 mb-4 rounded-lg">
-                        <p>No recipes found for "{{searchQuery}}".</p>
+                    <div v-if="recipes.data.length === 0 && searchType === 'recipes' && searchCompleted && !isSearching" class="bg-red-200 p-4 mb-4 rounded-lg">
+                        <p>No recipes found. Maybe you should upload one!</p>
                     </div>
-                    <div v-if="users.length === 0 && searchType.value === 'users'" class="bg-red-200 p-4 mb-4 rounded-lg">
-                        <p>No users found for "{{searchQuery}}".</p>
+                    <div v-if="users.data.length === 0 && searchType === 'users' && searchCompleted && !isSearching" class="bg-red-200 p-4 mb-4 rounded-lg">
+                        <p>No users found.</p>
                     </div>
                     <RecipeCard v-for="recipe in recipes.data" v-if="searchType === 'recipes'" :key="recipe.id" :recipe="recipe"  @toggleBookmark="toggleBookmark" :navigateToRecipe="navigateToRecipe"/>
-
-                    <div v-for="user in users" :key="user.id" v-if="searchType === 'users'" class="bg-green-200 p-4 mb-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="flex-1 text-center">
-                                <h3 class="text-lg font-bold"><Link :href="`/profile/${user.id}`" class="text-blue-500">{{user.name}}</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-
+                    <UserCard v-for="user in users.data" v-if="searchType === 'users'" :key="user.id"  :user="user" :navigateToUserProfile="navigateToUserProfile" class="mb-6"/>
                     <div v-if="searchType === 'recipes'">
                         <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
                             Load More
@@ -186,7 +227,6 @@ const toggleBookmark = async (recipe) => {
                     </div>
                 </Panel>
             </div>
-
             <!-- Left Panel Search and Collections -->
             <div class="md:block row-start-1 col-span-1 rounded-lg">
                 <Panel>
@@ -203,7 +243,6 @@ const toggleBookmark = async (recipe) => {
                             </form>
                         </div>
                     </div>
-
                     <div class="hidden md:block row-start-2 bg-green-200 p-4 rounded-lg text-center">
                         <h2 class="text-lg font-bold mb-4">Collections</h2>
                         <div v-for="category in categories" :key="category.id" class="mb-2">
@@ -217,6 +256,7 @@ const toggleBookmark = async (recipe) => {
         </div>
     </AuthenticatedLayout>
 </template>
+
 
 <style scoped>
 .grid {

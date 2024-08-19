@@ -20,56 +20,90 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request, User $user = null): Response
-    {
-        $user = $user ?: $request->user();
-        $authUser = $request->user();
-        $isOwnProfile = $authUser->id === $user->id;
-        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
+//    public function edit(Request $request, User $user = null): Response
+//    {
+//        $user = $user ?: $request->user();
+//        $authUser = $request->user();
+//        $isOwnProfile = $authUser->id === $user->id;
+//        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
+//
+//        //fetch followers
+//        $followers = $user->followers;
+//
+//        $following = $user->following;
+//        //fetch recipe count
+//
+//        $recipeCount = $user->recipes()->count();
+//
+//
+//        return Inertia::render('Profile/Edit', [
+//            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
+//            'status' => session('status'),
+//            'user' => $user,
+//            'authUser' => $authUser,
+//            'isFollowing' => $isFollowing,
+//            'isOwnProfile' => $isOwnProfile,
+//            'followers' => $followers,
+//            'following' => $following,
+//            'followersCount' => count($followers),
+//            'recipeCount' => $recipeCount,
+//        ]);
+//    }
 
-        //fetch followers
+//    public function show(Request $request, User $user){
+//        $authUser = $request->user();
+//        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
+//
+//        //fetch followers
+//        $followers = $user->followers;
+//
+//        $recipeCount = $user->recipes()->count();
+//
+//        return Inertia::render('Profile/Edit', [
+//            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
+//            'status' => session('status'),
+//            'user' => $user,
+//            'authUser' => $authUser,
+//            'isFollowing' => $isFollowing,
+//            'isOwnProfile' => $authUser->id === $user->id,
+//            'followersCount' => count($followers),
+//            'recipeCount' => $recipeCount,
+//        ]);
+//    }
+
+    public function show($username){
+        $user = User::where('name', $username)->orWhere('slug', $username)->firstOrFail();
+        $authUser = Auth::user();
+        $isOwnProfile = $authUser && $authUser->id === $user->id;
+
+
+        // check if the auth user is following the profile user
+        $isFollowing = $authUser && $authUser->following()->where('following_user_id', $user->id)->exists();
+
+
         $followers = $user->followers;
-
         $following = $user->following;
-        //fetch recipe count
-
         $recipeCount = $user->recipes()->count();
+        $recipes = $user->recipes;
 
-
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
-            'status' => session('status'),
+        return Inertia::render('Profile/Show', [
             'user' => $user,
-            'authUser' => $authUser,
-            'isFollowing' => $isFollowing,
+            'recipes' => $recipes,
             'isOwnProfile' => $isOwnProfile,
             'followers' => $followers,
             'following' => $following,
-            'followersCount' => count($followers),
-            'recipeCount' => $recipeCount,
-        ]);
-    }
-
-    public function show(Request $request, User $user){
-        $authUser = $request->user();
-        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
-
-        //fetch followers
-        $followers = $user->followers;
-
-        $recipeCount = $user->recipes()->count();
-
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
-            'status' => session('status'),
-            'user' => $user,
-            'authUser' => $authUser,
             'isFollowing' => $isFollowing,
-            'isOwnProfile' => $authUser->id === $user->id,
             'followersCount' => count($followers),
             'recipeCount' => $recipeCount,
         ]);
     }
+    public function showRecipes($username)
+    {
+        $user = User::where('name', $username)->firstOrFail();
+        $recipes = $user->recipes; // Assuming you have a relationship defined in the User model
+        return response()->json(['recipes' => $recipes]);
+    }
+
 
     public function search(Request $request) {
         $query = $request->input('q');
@@ -168,15 +202,18 @@ class ProfileController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function follow(User $user) {
+    public function follow($username) {
+        $user = User::where('name', $username)->firstOrFail();
         $authUser = auth()->user();
+
         if(!$authUser->following()->where('following_user_id', $user->id)->exists()){
             $authUser->following()->attach($user->id);
         }
         return redirect()->back();
     }
 
-    public function unfollow(User $user) {
+    public function unfollow($username) {
+        $user = User::where('name', $username)->firstOrFail();
         $authUser = auth()->user();
         if($authUser->following()->where('following_user_id', $user->id)->exists()){
             $authUser->following()->detach($user->id);

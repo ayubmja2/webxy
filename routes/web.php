@@ -8,10 +8,15 @@
     use Illuminate\Foundation\Application;
     use Illuminate\Foundation\Auth\EmailVerificationRequest;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\Route;
     use Inertia\Inertia;
 
     Route::get('/', function () {
+
+        if(Auth::check()){
+            return redirect('/recipes');
+        }
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
@@ -45,17 +50,20 @@
         // Main application routes.
 
         // Profile Route
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
+        Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
+//        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
         route::post('/profile/update-allergens', [profileController::class, 'updateAllergens'])->name('profile.update-allergens');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::post('/profile/{user}/follow', [ProfileController::class, 'follow'])->name('profile.follow');
-        Route::post('/profile/{user}/unfollow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
-        Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
-        Route::post('profile/update-bio', [ProfileController::class, 'updateBio'])->name('profile.update-bio');
+        Route::post('/profile/{username}/follow', [ProfileController::class, 'follow'])->name('profile.follow');
+        Route::post('/profile/{username}/unfollow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
         Route::get('/profile/{user}/followers', [ProfileController::class, 'getFollowers']);
         Route::get('/profile/{user}/following', [ProfileController::class, 'getFollowing']);
+
+        Route::post('profile/update-bio', [ProfileController::class, 'updateBio'])->name('profile.update-bio');
+
 
 
         // Category Routes

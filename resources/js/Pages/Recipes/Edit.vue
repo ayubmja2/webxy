@@ -29,7 +29,7 @@ const measurementUnits = ref(
 
 // Define the Quantity
 
-const quantities = ref(['1/4', '1/2', '1/8', '1/16', '1', '2', '3',  '4', '5']);
+const quantities = ref(['1/4', '1/2', '1/8', '1/16', '1', '2', '3',  '4', '5', '6']);
 
 // Function to check if a string is a fraction
 function isFraction(value) {

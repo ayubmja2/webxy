@@ -3,6 +3,7 @@
     namespace App\Http\Controllers;
 
     use App\Events\RecipeUploaded;
+    use App\Models\User;
     use App\Notifications\RecipeNotification;
     use App\Models\Ingredient;
     use App\Models\Recipe;
@@ -25,6 +26,7 @@
             //get the currently authenticated user
             $user = Auth::user();
 
+            $users = User::paginate(10);
             //Determine if the user wants to see only followed user's recipes
             $showFollowing = $request->query('filter') === 'following';
 
@@ -55,6 +57,7 @@
                 'auth' => [
                     'user' => auth()->user(),
                 ],
+                'users' => $users,
                 'recipes' => $recipes,
                 'categories' => $categories,
                 'links' => $recipes->links(), // Include pagination links
@@ -224,26 +227,47 @@
         public function search(Request $request)
         {
 
+//            $query = $request->input('query');
+//
+//            $results = Recipe::where('title', 'like', '%' . $query . '%')
+//                ->orWhere('description', 'like', '%' . $query . '%')->orderBy('created_at', 'desc')
+//                ->with('user')
+//                ->paginate(10);
+//
+//            return Inertia::render('Recipes/Index', [
+//                'recipes' => $results,
+//                'query' => $query,
+//            ]);
+
+
+
             $query = $request->input('query');
+            $searchType = $request->input('type');
 
-            $results = Recipe::where('title', 'like', '%' . $query . '%')
-                ->orWhere('description', 'like', '%' . $query . '%')->orderBy('created_at', 'desc')
-                ->with('user')
-                ->paginate(10);
+            if($searchType === 'recipes') {
+                $results = Recipe::where('title', 'like', '%' . $query . '%')
+                    ->orWhere('description', 'like', '%' . $query . '%')
+                    ->orderBy('created_at', 'desc')
+                    ->with('user')
+                    ->paginate(10);
+                return Inertia::render('Recipes/Index', [
+                    'recipes' => $results,
+                    'query' => $query,
+                ]);
+            }elseif( $searchType === 'users') {
+                $results = User::where('name', 'like', '%' . $query . '%')
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10);
+                return Inertia::render('Recipes/Index', [
+                    'users' => $results,
+                    'query' => $query,
+                ]);
+            }
 
-            return Inertia::render('Recipes/Index', [
-                'recipes' => $results,
-                'query' => $query,
-            ]);
         }
 
         public function bookmark(Request $request, Recipe $recipe) {
             $user = $request->user();
-
-            // Preventing a user from bookmarking their own recipe.
-            if($user->id === $recipe->user_id){
-                return response()->json(['error' => 'You cannot bookmark your own recipe'], 403);
-            }
 
             //Toggle the bookmark
             $user->bookmarkedRecipes()->toggle($recipe->id);

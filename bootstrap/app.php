@@ -15,9 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\ExemptWebhookCsrf::class
         ]);
-
         //
+        $middleware->validateCsrfTokens(except: [
+            'mailgun/*',
+            'webhook/mailgun/clicked',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

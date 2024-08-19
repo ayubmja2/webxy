@@ -88,8 +88,8 @@ class ProfileController extends Controller
 
         return Inertia::render('Profile/Show', [
             'user' => $user,
-            'profileImageUrl' => $user->profileImageUrl(),
-            'profileCoverUrl' => $user->profileCoverUrl(),
+            'profileImageUrl' => $user->getProfileImageUrlAttribute(),
+            'profileCoverUrl' => $user->getCoverImageUrlAttribute(),
             'recipes' => $recipes,
             'isOwnProfile' => $isOwnProfile,
             'followers' => $followers,

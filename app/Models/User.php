@@ -4,6 +4,7 @@
 
     // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+    use App\Jobs\SendEmailVerificationJob;
     use Illuminate\Auth\Notifications\VerifyEmail;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
     use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,7 +57,7 @@
         }
         public function sendEmailVerificationNotification()
         {
-            Notification::send($this, (new VerifyEmail)->onQueue(env('QUEUE_MAIL', 'mail_queue')));
+            SendEmailVerificationJob::dispatch($this)->onQueue(env('QUEUE_MAIL', 'mail_queue'));
         }
         public function getProfileImageUrlAttribute()
         {

@@ -117,11 +117,11 @@
             }
 
 
-            broadcast(new RecipeUploaded($recipe));
+            broadcast(new RecipeUploaded($recipe))->onQueue(env('QUEUE_BROADCAST','broadcast_queue'));
 
             $followers = $request->user()->followers;
             foreach ($followers as $follower) {
-               $follower->notify(new RecipeNotification($recipe));
+               $follower->notify(new RecipeNotification($recipe))->onQueue(env('QUEUE_NOTIFICATIONS','notifications_queue'));
             }
 
 
@@ -226,21 +226,6 @@
 
         public function search(Request $request)
         {
-
-//            $query = $request->input('query');
-//
-//            $results = Recipe::where('title', 'like', '%' . $query . '%')
-//                ->orWhere('description', 'like', '%' . $query . '%')->orderBy('created_at', 'desc')
-//                ->with('user')
-//                ->paginate(10);
-//
-//            return Inertia::render('Recipes/Index', [
-//                'recipes' => $results,
-//                'query' => $query,
-//            ]);
-
-
-
             $query = $request->input('query');
             $searchType = $request->input('type');
 

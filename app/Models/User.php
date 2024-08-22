@@ -4,6 +4,7 @@
 
     // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+    use Illuminate\Auth\Notifications\VerifyEmail;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
     use Illuminate\Database\Eloquent\Factories\HasFactory;
     use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -52,6 +53,12 @@
                 'password' => 'hashed',
             ];
         }
+
+        public function sendEmailVerificationNotification()
+        {
+            $this->notify((new VerifyEmail)->onQueue('mail_queue'));
+        }
+
 
         public function getProfileImageUrlAttribute()
         {

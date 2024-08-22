@@ -11,6 +11,7 @@
     use Illuminate\Foundation\Auth\User as Authenticatable;
     use Illuminate\Notifications\Notifiable;
     use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\Notification;
     use Illuminate\Support\Facades\Storage;
 
     class User extends Authenticatable implements MustVerifyEmail
@@ -53,13 +54,10 @@
                 'password' => 'hashed',
             ];
         }
-
         public function sendEmailVerificationNotification()
         {
-            $this->notify((new VerifyEmail)->onQueue('mail_queue'));
+            Notification::send($this, (new VerifyEmail)->onQueue(env('QUEUE_MAIL', 'mail_queue')));
         }
-
-
         public function getProfileImageUrlAttribute()
         {
             return $this->attributes['profile_image_url']

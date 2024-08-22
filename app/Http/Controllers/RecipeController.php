@@ -121,7 +121,8 @@
 
             $followers = $request->user()->followers;
             foreach ($followers as $follower) {
-               $follower->notify(new RecipeNotification($recipe))->onQueue(env('QUEUE_NOTIFICATIONS','notifications_queue'));
+               $notification = (new RecipeNotification($recipe))->onQueue(env('QUEUE_NOTIFICATIONS','notifications_queue'));
+               $follower->notify($notification);
             }
 
 

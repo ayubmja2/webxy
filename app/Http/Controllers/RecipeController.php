@@ -117,7 +117,7 @@
             }
 
 
-            broadcast(new RecipeUploaded($recipe))->onQueue(env('QUEUE_BROADCAST','broadcast_queue'));
+            broadcast(new RecipeUploaded($recipe));
 
             $followers = $request->user()->followers;
             foreach ($followers as $follower) {

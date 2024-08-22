@@ -8,11 +8,12 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class RecipeUploaded implements ShouldBroadcast
+class RecipeUploaded implements ShouldBroadcast, ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -31,4 +32,7 @@ class RecipeUploaded implements ShouldBroadcast
        return new PrivateChannel('recipes');
     }
 
+    public function onQueue() {
+        return env('QUEUE_BROADCAST', 'broadcast_queue');
+    }
 }

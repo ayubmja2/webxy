@@ -111,8 +111,8 @@
 
         //        Payment Routes
         Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
-        Route::post('/checkout', [PaymentController::class, 'processCheckout']);
         Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+        Route::get('/payment-cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
     });
 
     require __DIR__ . '/auth.php';

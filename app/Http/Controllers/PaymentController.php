@@ -9,67 +9,50 @@
     use Inertia\Inertia;
     use Inertia\Response;
     use Pusher\ApiErrorException;
+    use Stripe\Checkout\Session;
     use Stripe\PaymentIntent;
     use Stripe\Stripe;
     use Stripe\StripeClient;
 
     class PaymentController extends Controller
     {
-        public function checkout(Request $request)
-        {
-            Stripe::setApiKey(env('STRIPE_SECRET'));
-            try{
-                $paymentIntent = PaymentIntent::create([
-                   'amount' => 2000,
-                   'currency' => 'cad',
-                   'payment_method_types' => ['card'],
-                   'automatic_payment_methods' => ['enabled' => false],
-                ]);
-            }catch(ApiErrorException $e){
-                return back()->withErrors('error', $e->getMessage());
-            }
-
-            return  Inertia::render( 'Checkout/Show',
-                [
-                    'clientSecret' => $paymentIntent->client_secret,
-                ]);
-        }
-
-        public function processCheckout(Request $request): RedirectResponse
+        public function checkout(Request $request): RedirectResponse
         {
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
             try {
-                $user = Auth::user();
+                $checkoutSession = Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'price_data' => [
+                            'currency' => 'cad',
+                            'product_data' => [
+                                'name' => 'Your Product Name',
+                            ],
+                            'unit_amount' => 2000, // 2000 cents = $20.00 CAD
+                        ],
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment', // Use 'payment' for one-time payments
+                    'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('payment.cancel'),
+                ]);
 
-                // Fetch the PaymentIntent ID from the frontend (this could be passed via the request)
-                $paymentIntentId = $request->input('payment_intent_id');
-
-                // Retrieve the PaymentIntent from Stripe
-                $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
-
-                // Check if the payment was successful
-                if ($paymentIntent->status === 'succeeded') {
-                    // Mark payment as complete, activate subscription, etc.
-                    // Example: Grant the user a subscription or mark an order as paid
-                    $user->subscriptions()->create([
-                        'stripe_payment_intent_id' => $paymentIntentId,
-                        'status' => 'active',
-                    ]);
-
-                    // Optionally, you can redirect to a success page
-                    return redirect()->route('payment.success')->with('success', 'Payment successful!');
-                } else {
-                    // Handle any issues (e.g., payment failed or requires further action)
-                    return back()->withErrors(['error' => 'Payment failed or requires further action.']);
-                }
-            } catch (ApiErrorException $e) {
-                return back()->withErrors(['error' => $e->getMessage()]);
+                return Redirect::away($checkoutSession->url);
+            } catch (\Exception $e) {
+                return back()->withErrors('error', $e->getMessage());
             }
         }
 
+        // Method to render a success page after payment
+        public function paymentSuccess(Request $request): Response
+        {
+            return Inertia::render('Checkout/Success');
+        }
 
-        public function paymentSuccess(){
-            return Inertia::render( 'Checkout/Success');
+        // Method to render a cancel page if the payment is canceled
+        public function paymentCancel(Request $request): Response
+        {
+            return Inertia::render('Checkout/Cancel');
         }
     }

@@ -1,60 +1,66 @@
-<script>
-import {loadStripe} from "@stripe/stripe-js";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+<script setup>
+import { loadStripe } from "@stripe/stripe-js";
+import { usePage } from "@inertiajs/vue3";
+import { onMounted, ref } from "vue";
 
-import {ref} from "vue";
-import {usePage} from "@inertiajs/vue3";
-const {props} = usePage();
+const stripe = ref(null);
+const elements = ref(null);
+const { props } = usePage();
+let clientSecret = props.clientSecret;
 
-export default {
-    components: {AuthenticatedLayout},
-    data() {
-       return {
-           stripe: null,
-           card:null
-       };
-    },
-    mounted() {
-        console.log('Stripe Key:', this.props.stripeKey);
-        this.initializeStripe();
-    },
-    methods: {
-        async initializeStripe() {
-            this.stripe = await loadStripe(this.props.stripeKey);
-            if(!this.stripe){
-                console.error('Failed to init stripe');
-                return;
-            }
-            const elements = this.stripe.elements();
-            this.card = elements.create('card');
-            this.card.mount('#card-element');
+onMounted(async () => {
+    stripe.value = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC);
+
+    if (!stripe.value) {
+        console.error('Stripe failed to initialize.');
+        return;
+    }
+
+    const appearance = {
+        theme: 'flat',
+        variables: {colorPrimaryText: '#262626'}
+    };
+
+    elements.value = stripe.value.elements({clientSecret, appearance});
+
+    const paymentElement = elements.value.create("payment");
+    paymentElement.mount('#payment-element');
+});
+
+async function submitPayment() {
+    const {paymentIntent, error} = await stripe.value.confirmPayment({
+        elements: elements.value,
+        confirmParams: {
+            return_url: window.location.origin + "/payment-success", // Redirect URL after successful payment
         },
-        async submitPayment() {
-            const {paymentMethod, error} = await this.stripe.createPaymentMethod({
-                type: 'card',
-                card: this.card,
-            });
-            if(error) {
-                console.log(error.message);
-                return;
-            }
-            this.$inertia.post('/checkout', {
-                payment_method: paymentMethod.id,
-            });
-        },
-    },
-};
+    });
+
+    if (error) {
+        // Handle error, for example, by displaying it to the user
+        console.error("Payment failed:", error.message);
+        alert("Payment failed: " + error.message);
+    }else {
+        await axios.post('/process-checkout', {
+            payment_intent_id: paymentIntent.id,
+        })
+    }
+}
 </script>
 
 <template>
-    <AuthenticatedLayout>
-        <form @submit.prevent="submitPayment">
-            <div id="card-element"></div>
-            <button type="submit" class="btn-primary">Pay $10.00</button>
-        </form>
-    </AuthenticatedLayout>
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <form id="payment-form" @submit.prevent="submitPayment">
+                <div id="payment-element"></div>
+                <button id="submit" type="submit"
+                        class="btn-primary w-full mt-4 py-2 px-4 bg-blue-600 text-white rounded-md">
+                    Pay $20.00
+                </button>
+            </form>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-
+/* Add any additional scoped styles if needed */
 </style>

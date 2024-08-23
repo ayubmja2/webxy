@@ -89,11 +89,6 @@ const toggleBookmark = async (recipe) => {
     }
 };
 
-
-
-
-
-
 onMounted(() => {
     const horizontalScrollContainers = document.querySelectorAll('.overflow-x-auto');
     horizontalScrollContainers.forEach(container => {

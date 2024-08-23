@@ -112,8 +112,7 @@
         //        Payment Routes
         Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
         Route::post('/checkout', [PaymentController::class, 'processCheckout']);
-        Route::get('/success', [PaymentController::class, 'success'])->name('checkout.success');
-        Route::get('/test-stripe-key', [PaymentController::class, 'testStripeKey']);
+        Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
     });
 
     require __DIR__ . '/auth.php';

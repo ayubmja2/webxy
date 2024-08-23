@@ -16,6 +16,7 @@ const handleClickOutside = (event) => {
     }
 };
 // Add event listener for clicks outside of the dropdown
+
 onMounted(() => {
     document.addEventListener('click', handleClickOutside);
 });

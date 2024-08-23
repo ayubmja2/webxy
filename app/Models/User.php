@@ -14,10 +14,11 @@
     use Illuminate\Support\Facades\Log;
     use Illuminate\Support\Facades\Notification;
     use Illuminate\Support\Facades\Storage;
+    use Laravel\Cashier\Billable;
 
     class User extends Authenticatable implements MustVerifyEmail
     {
-        use HasFactory, Notifiable;
+        use HasFactory, Notifiable, Billable;
 
         /**
          * The attributes that are mass assignable.

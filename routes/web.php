@@ -3,6 +3,7 @@
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
     use App\Http\Controllers\MailgunWebhookController;
+    use App\Http\Controllers\PaymentController;
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
     use Illuminate\Foundation\Application;
@@ -46,6 +47,8 @@
     Route::post('/webhook/mailgun/clicked', [MailgunWebhookController::class, 'handleClicked']);
 
     Route::middleware(['auth', 'verified'])->group(function () {
+
+
 
         // Main application routes.
 
@@ -105,6 +108,12 @@
         Route::post('/api/notifications/read', function(){
             return auth()->user()->unreadNotifications->markAsRead();
         });
+
+        //        Payment Routes
+        Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout', [PaymentController::class, 'processCheckout']);
+        Route::get('/success', [PaymentController::class, 'success'])->name('checkout.success');
+        Route::get('/test-stripe-key', [PaymentController::class, 'testStripeKey']);
     });
 
     require __DIR__ . '/auth.php';

@@ -49,9 +49,9 @@ const handleBookmark = () => {
                 <div :class="compact ? 'flex flex-col justify-self-center': 'flex flex-col justify-self-center'">
                     <div :class="compact ? 'mx-auto' : 'm-auto'">
                         <img v-if="recipe.image_url" :src="recipe.image_url" alt="Recipe Image"
-                             :class="compact ? 'w-fit md:w-20 rounded-full':  'w-fit md:w-40  object-cover rounded-xl bg-orange-400 shadow-2xl dark:shadow-orange-300 mb-8'">
+                             :class="compact ? 'w-fit md:w-20 rounded-full':  'w-fit md:w-40  object-cover rounded-xl bg-darkOrange shadow-2xl dark:shadow-darkOrange mb-8'">
                     </div>
-                    <button v-if="!compact" class="bg-orange-500 text-white py-2 px-4 rounded-lg"
+                    <button v-if="!compact" class="bg-darkOrange text-white py-2 px-4 rounded-lg"
                             @click="navigateToRecipe(recipe.id)">Info
                     </button>
                 </div>

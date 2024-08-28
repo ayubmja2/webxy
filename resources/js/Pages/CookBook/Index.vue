@@ -111,7 +111,7 @@ onMounted(() => {
                     <div class="text-center">
                         <form @submit.prevent="createCategory">
                             <input type="text" class="rounded-2xl opacity-50 mr-4" v-model="newCategoryTitle" placeholder="New Category"/>
-                            <button class="bg-orange-400 max-sm:mt-2 md:ml-4 rounded-2xl p-2 px-4 shadow dark:shadow-amber-500" type="submit">New Category</button>
+                            <button class="bg-darkOrange text-mintGreen max-sm:mt-2 md:ml-4 rounded-2xl p-2 px-4 shadow dark:shadow-amber-500" type="submit">New Category</button>
                         </form>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ onMounted(() => {
                         </div>
                         <ul class="flex flex-wrap justify-evenly max-sm:flex-col text-center">
                             <li v-for="category in categories"
-                                class="p-2 bg-orange-400 rounded-lg shadow"
+                                class="p-2 bg-darkOrange text-mintGreen rounded-lg shadow"
                                 :key="category.id"
                                 @dragover="allowDrop"
                                 @drop="(event) => dropBookmark(event,category.id)">

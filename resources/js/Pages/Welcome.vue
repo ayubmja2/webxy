@@ -44,7 +44,7 @@ function handleImageError() {
                     </button>
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <Link :href="route('login')" class="rounded-xl bg-orange-400 px-3.5 py-2.5 text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></Link>
+                    <Link :href="route('login')" class="rounded-xl bg-darkOrange px-3.5 py-2.5 text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></Link>
                 </div>
             </nav>
         </header>
@@ -63,7 +63,7 @@ function handleImageError() {
                     <h1 class="text-4xl font-bold tracking-tight text-black sm:text-6xl">A place where you can eat Confidently</h1>
                     <p class="mt-6 text-lg leading-8 text-white">Share your recipes with the world.</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6">
-                        <Link :href="route('register')" class="rounded-md bg-orange-400 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">Get started</Link>
+                        <Link :href="route('register')" class="rounded-md bg-darkOrange px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">Get started</Link>
                     </div>
                 </div>
             </div>

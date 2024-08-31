@@ -121,7 +121,7 @@ onMounted(() => {
             <div class="grid grid-cols-2 m-4 gap-2">
                 <Panel>
                     <div class="flex flex-col space-y-2 text-center">
-                        <div>
+                        <div class="font-medium  mb-4">
                             <h1>New Categories</h1>
                         </div>
                         <ul class="flex flex-wrap justify-evenly max-sm:flex-col text-center">
@@ -138,7 +138,7 @@ onMounted(() => {
 
                 <Panel>
                     <div class="container mx-auto">
-                        <div class="text-center mb-4">
+                        <div class="text-center mb-4 font-medium">
                             <h1>New BookMarks</h1>
                         </div>
                         <div class="container mx-auto">
@@ -155,7 +155,7 @@ onMounted(() => {
                 </Panel>
                 <div class="container mx-auto col-span-2">
                     <Panel>
-                        <div class="text-center text-md mb-3">
+                        <div class="text-center text-md mb-4 font-medium">
                             <h1>My Recipes</h1>
                         </div>
                         <div class="container mx-auto">

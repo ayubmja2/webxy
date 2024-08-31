@@ -71,6 +71,10 @@ function toFraction(decimal) {
 }
 // Function to convert fraction or mixed fraction to decimal
 function fractionToDecimal(fraction) {
+    if(typeof fraction != 'string'){
+        fraction = fraction.toString();
+    }
+
     let parts = fraction.split(' ');
     let integerPart = 0;
     let fractionPart = fraction;

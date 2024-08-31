@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, watch, onMounted } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { router, usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
 import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
@@ -252,6 +252,13 @@ const toggleBookmark = async (recipe) => {
                         </div>
                     </div>
                 </Panel>
+                <div class="flex justify-center">
+                    <ul class="flex space-x-4 ml-2 mt-4">
+                        <Link><li>About</li></Link>
+                        <Link><li>Career</li></Link>
+                        <Link><li>Terms of service</li></Link>
+                    </ul>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>

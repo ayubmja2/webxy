@@ -39,7 +39,11 @@ const showingNavigationDropdown = ref(false);
                                     Cook Book
                                 </NavLink>
                             </div>
-
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('mealplanner.index')" :active="route().current('mealplanner.index')">
+                                    Meal Panner
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div class="flex">

@@ -3,6 +3,7 @@
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
     use App\Http\Controllers\MailgunWebhookController;
+    use App\Http\Controllers\MealPlannerController;
     use App\Http\Controllers\PaymentController;
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
@@ -100,6 +101,9 @@
         // Search
         Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
         Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
+
+        // Meal Planner
+        Route::get('/mealplanner', [MealPlannerController::class, 'index'])->name('mealplanner.index');
 
         //Fetch unread notifications
         Route::get('/api/notifications/unread', function(){

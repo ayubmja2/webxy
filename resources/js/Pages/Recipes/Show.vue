@@ -33,7 +33,7 @@ const allergens = recipeIngredients.filter(ingredient => userAllergies.includes(
 onMounted(() => {
     document.addEventListener('click', handleClickOutside);
 
-    axios.post('http://staging.platerly:8080/suggest_substitutes', {
+    axios.post('http://sea-lion-app-fliok.ondigitalocean.app:8080/suggest_substitutes', {
         ingredients: recipeIngredients,
         allergens: userAllergies
     })

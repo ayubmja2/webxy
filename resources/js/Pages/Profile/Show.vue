@@ -217,7 +217,7 @@ const navigateToUserProfile = (username) => {
                 </div>
             </div>
             <div class="absolute top-0 right-0 m-4" v-if="props.isOwnProfile">
-                <button @click="toggleDropdown" class="text-white hover:text-blue-600">
+                <button @click="toggleDropdown" class="text-mintGreen hover:text-blue-600">
                     <i class="fa-solid fa-gear fa-2x"></i>
                 </button>
                 <div v-if="showDropdown" class="absolute right-0 mt-2 bg-white rounded-md shadow-lg z-20">
@@ -235,28 +235,28 @@ const navigateToUserProfile = (username) => {
                     <div class="container mx-auto">
                         <ul class="flex justify-evenly items-center">
                             <li>
-                                <button @click="switchSection('public-profile')" :class="{'text-white' : currentSection === 'public-profile'}"
-                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                <button @click="switchSection('public-profile')" :class="{'text-mintGreen' : currentSection === 'public-profile'}"
+                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                     Profile
                                 </button>
                             </li>
 
                             <li v-if="!props.isOwnProfile">
-                                <button @click="switchSection('recipes')" :class="{'text-white' : currentSection === 'recipes'}"
-                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                <button @click="switchSection('recipes')" :class="{'text-mintGreen' : currentSection === 'recipes'}"
+                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                     Recipes
                                 </button>
                             </li>
 
                             <li v-if="props.isOwnProfile">
-                                <button @click="switchSection('account-info')" v-if="props.isOwnProfile" :class="{'text-white' : currentSection === 'account-info'}"
-                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                <button @click="switchSection('account-info')" v-if="props.isOwnProfile" :class="{'text-mintGreen' : currentSection === 'account-info'}"
+                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                     Account Info
                                 </button>
                             </li>
                             <li v-if="props.isOwnProfile">
-                                <button @click="switchSection('settings')" v-if="props.isOwnProfile" :class="{'text-white' : currentSection === 'settings'}"
-                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                <button @click="switchSection('settings')" v-if="props.isOwnProfile" :class="{'text-mintGreen' : currentSection === 'settings'}"
+                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                     Settings
                                 </button>
                             </li>
@@ -280,15 +280,15 @@ const navigateToUserProfile = (username) => {
                                         <p>{{ props.user.bio || 'No bio available' }}</p>
                                     </div>
                                 </Panel>
-                                <hr class="border-orange-400 mt-4">
+                                <hr class="border-darkOrange mt-4 mb-4">
                                 <button v-if="props.isOwnProfile" @click="openBioModal"
-                                        class="bg-orange-400 text-white p-2 rounded mt-2">Edit Bio
+                                        class="bg-darkOrange text-mintGreen p-2 rounded mt-2">Edit Bio
                                 </button>
                                 <div v-if="props.auth.user.id !== props.user.id">
                                     <button v-if="!props.isFollowing" @click="followUser"
-                                            class="bg-blue-500 text-white p-2 rounded">Follow
+                                            class="bg-blue-500 text-mintGreen p-2 rounded">Follow
                                     </button>
-                                    <button v-else @click="unfollowUser" class="bg-red-500 text-white p-2 rounded">
+                                    <button v-else @click="unfollowUser" class="bg-red-500 text-mintGreen p-2 rounded">
                                         Unfollow
                                     </button>
                                 </div>
@@ -300,9 +300,9 @@ const navigateToUserProfile = (username) => {
                                         <h2 class="text-xl mb-4">Edit Bio</h2>
                                         <textarea v-model="bio" class="w-full p-2 border rounded mb-4"
                                                   rows="4"></textarea>
-                                        <button @click="saveBio" class="bg-green-500 text-white p-2 rounded">Save
+                                        <button @click="saveBio" class="bg-green-500 text-mintGreen p-2 rounded">Save
                                         </button>
-                                        <button @click="closeBioModal" class="bg-red-500 text-white p-2 rounded">
+                                        <button @click="closeBioModal" class="bg-red-500 text-mintGreen p-2 rounded">
                                             Cancel
                                         </button>
                                     </div>
@@ -314,14 +314,14 @@ const navigateToUserProfile = (username) => {
                                         class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto">
                                         <ul class="flex justify-evenly mb-4">
                                             <li>
-                                                <button @click="switchFollowerSection('followers')" :class="{'text-white' : currentFollowerSection === 'followers'}"
-                                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                                <button @click="switchFollowerSection('followers')" :class="{'text-mintGreen' : currentFollowerSection === 'followers'}"
+                                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                                     Followers
                                                 </button>
                                             </li>
                                             <li>
-                                                <button @click="switchFollowerSection('following')" :class="{'text-white' : currentFollowerSection === 'following'}"
-                                                        class="bg-gradient-to-b from-orange-400 to-orange-400 rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
+                                                <button @click="switchFollowerSection('following')" :class="{'text-mintGreen' : currentFollowerSection === 'following'}"
+                                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
                                                     Following
                                                 </button>
                                             </li>
@@ -373,7 +373,7 @@ const navigateToUserProfile = (username) => {
                                 <input type="text" v-model="allergiesInput" @keyup.enter="saveAllergies"
                                        placeholder="wheat, soy, eggs" class="rounded-xl">
                                 <button @click="saveAllergies"
-                                        class="bg-gradient-to-b from-orange-400 to-orange-400  p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-mediump-2 rounded-xl">
+                                        class="bg-gradient-to-b from-darkOrange to-darkOrange  p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-mediump-2 rounded-xl">
                                     Save
                                 </button>
                             </div>
@@ -387,7 +387,7 @@ const navigateToUserProfile = (username) => {
                             <div class="p-7 h-28 overflow-hidden overflow-x-scroll">
                                 <ul class="grid grid-rows-1 grid-flow-col gap-3 justify-items-center space-x-1">
                                     <li v-for="allergy in allergies" :key="allergy"
-                                        class="relative font-medium bg-orange-400 rounded-xl p-3 px-7 min-w-[120px] text-center  shadow-md">
+                                        class="relative font-medium bg-darkOrange text-mintGreen rounded-xl p-3 px-7 min-w-[120px] text-center  shadow-md">
                                         <span>{{ allergy.charAt(0).toUpperCase() + allergy.slice(1) }}</span>
                                         <button @click="deleteAllergy(allergy)"
                                                 class="absolute top-1 right-1 text-red-600 font-bold">X

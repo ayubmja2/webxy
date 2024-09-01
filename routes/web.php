@@ -3,6 +3,8 @@
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
     use App\Http\Controllers\MailgunWebhookController;
+    use App\Http\Controllers\MealPlannerController;
+    use App\Http\Controllers\PaymentController;
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
     use Illuminate\Foundation\Application;
@@ -46,6 +48,8 @@
     Route::post('/webhook/mailgun/clicked', [MailgunWebhookController::class, 'handleClicked']);
 
     Route::middleware(['auth', 'verified'])->group(function () {
+
+
 
         // Main application routes.
 
@@ -98,6 +102,9 @@
         Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
         Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
 
+        // Meal Planner
+        Route::get('/mealplanner', [MealPlannerController::class, 'index'])->name('mealplanner.index');
+
         //Fetch unread notifications
         Route::get('/api/notifications/unread', function(){
             return auth()->user()->unreadNotifications;
@@ -105,6 +112,22 @@
         Route::post('/api/notifications/read', function(){
             return auth()->user()->unreadNotifications->markAsRead();
         });
+
+        //        Payment Routes
+        Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+        Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+        Route::get('/payment-cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
     });
+
+    Route::get('/about', function (){
+        return Inertia::render('About/Index');
+    })->name('about');
+
+    Route::get('/career', function(){
+        return Inertia::render('Career/Index');
+    })->name('career');
+    Route::get('/terms', function(){
+        return Inertia::render('TOS/Index');
+    })->name('terms');
 
     require __DIR__ . '/auth.php';

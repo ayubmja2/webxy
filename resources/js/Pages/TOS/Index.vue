@@ -1,0 +1,99 @@
+<script setup>
+
+import {Link} from "@inertiajs/vue3";
+</script>
+
+<template>
+    <div>
+        <header class="absolute inset-x-0 top-0 z-50">
+            <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+                <div class="flex lg:flex-1">
+                    <a href="#" class="-m-1.5 p-1.5">
+                        <h1 class="font-bold text-2xl text-white">Platerly</h1>
+                    </a>
+                </div>
+                <div class="flex lg:hidden">
+                    <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+                    <Link :href="route('login')" class="rounded-xl bg-darkOrange px-3.5 py-2.5 text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></Link>
+                </div>
+            </nav>
+        </header>
+
+        <div  class="relative isolate px-6 pt-14 lg:px-8">
+            <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+            </div>
+            <div class="mx-auto text-center mt-4 font-bold text-2xl space-y-4">
+                <h1>Terms Of Service</h1>
+                <h3>Last Updated: [Sept 1/ 2024]</h3>
+                <hr>
+            </div>
+
+            <div class="mx-auto max-w-2xl py-32 sm:py-16">
+                <div>
+
+                    <ul class="list-outside list-decimal font-bold text-2xl space-y-6">
+                       <li>
+                           Acceptance of Terms
+                           <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                               <li>By accessing or using Platerly, you agree to comply with and be bound by these Terms of Service. If you do not agree, please do not use our services.</li>
+                           </ol>
+                       </li>
+                        <li>
+                            User Responsibilities
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>Users are expected to behave respectfully and lawfully on our platform. This includes, but is not limited to, refraining from uploading inappropriate content or violating the privacy of others.</li>
+                            </ol>
+                        </li>
+                        <li>
+                            Account Information
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</li>
+                            </ol>
+                        </li>
+                        <li>
+                            Content Ownership
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>Any content you upload remains your property, but by uploading it to Platerly, you grant us a non-exclusive, royalty-free license to use, distribute, and display that content.</li>
+                            </ol>
+                        </li>
+                        <li>
+                            Limitations of Liability
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>Platerly is not liable for any damages, losses, or DEATH related to the use of our services. Use our platform at your own risk. We cannot guarantee our system to filter out or alert users
+                                    of potential allergens 100% of the time. You are fully responsible for your wellbeing and should be reading and looking into the ingredients yourself while using our platform as an aid at all times. </li>
+                            </ol>
+                        </li>
+                        <li>
+                            Governing Law
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>These Terms of Service are governed by the laws of [Your State/Country].</li>
+                            </ol>
+                        </li>
+                        <li>
+                            Changes to Terms
+                            <ol class="ps-5 mt-2 space-y-1 list-disc list-outside">
+                                <li>We reserve the right to modify these Terms of Service at any time. Users will be notified of significant changes.</li>
+                            </ol>
+                        </li>
+                    </ul>
+                    <p class="mt-6 text-lg leading-8 text-white"> Join us in our journey to create a world where food is not only inclusive but also a source of joy and connection.</p>
+                </div>
+            </div>
+            <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+                <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+
+</style>

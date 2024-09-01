@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22a1c6ce935509e73beb2ad2d58f959b",
+    "content-hash": "5527052c2e1b405f855151969cf2283c",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1415,17 +1415,164 @@
             "time": "2024-07-05T13:35:01+00:00"
         },
         {
-            "name": "laravel/framework",
-            "version": "v11.20.0",
+            "name": "jean85/pretty-package-versions",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/laravel/framework.git",
-                "reference": "3cd7593dd9b67002fc416b46616f4d4d1da3e571"
+                "url": "https://github.com/Jean85/pretty-package-versions.git",
+                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/3cd7593dd9b67002fc416b46616f4d4d1da3e571",
-                "reference": "3cd7593dd9b67002fc416b46616f4d4d1da3e571",
+                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/f9fdd29ad8e6d024f52678b570e5593759b550b4",
+                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2.0.0",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.2",
+                "jean85/composer-provided-replaced-stub-package": "^1.0",
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^7.5|^8.5|^9.4",
+                "vimeo/psalm": "^4.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jean85\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alessandro Lai",
+                    "email": "alessandro.lai85@gmail.com"
+                }
+            ],
+            "description": "A library to get pretty versions strings of installed dependencies",
+            "keywords": [
+                "composer",
+                "package",
+                "release",
+                "versions"
+            ],
+            "support": {
+                "issues": "https://github.com/Jean85/pretty-package-versions/issues",
+                "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.6"
+            },
+            "time": "2024-03-08T09:58:59+00:00"
+        },
+        {
+            "name": "laravel/cashier",
+            "version": "v15.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/cashier-stripe.git",
+                "reference": "6b5c938675d11ab8bd7b4b38124ae5d4562ccc0c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/cashier-stripe/zipball/6b5c938675d11ab8bd7b4b38124ae5d4562ccc0c",
+                "reference": "6b5c938675d11ab8bd7b4b38124ae5d4562ccc0c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/console": "^10.0|^11.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "illuminate/database": "^10.0|^11.0",
+                "illuminate/http": "^10.0|^11.0",
+                "illuminate/log": "^10.0|^11.0",
+                "illuminate/notifications": "^10.0|^11.0",
+                "illuminate/pagination": "^10.0|^11.0",
+                "illuminate/routing": "^10.0|^11.0",
+                "illuminate/support": "^10.0|^11.0",
+                "illuminate/view": "^10.0|^11.0",
+                "moneyphp/money": "^4.0",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.1",
+                "stripe/stripe-php": "^13.0",
+                "symfony/console": "^6.0|^7.0",
+                "symfony/http-kernel": "^6.0|^7.0",
+                "symfony/polyfill-intl-icu": "^1.22.1"
+            },
+            "require-dev": {
+                "dompdf/dompdf": "^2.0",
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^8.18|^9.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.4"
+            },
+            "suggest": {
+                "dompdf/dompdf": "Required when generating and downloading invoice PDF's using Dompdf (^1.0.1|^2.0).",
+                "ext-intl": "Allows for more locales besides the default \"en\" when formatting money values."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "15.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Cashier\\CashierServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Cashier\\": "src/",
+                    "Laravel\\Cashier\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Dries Vints",
+                    "email": "dries@laravel.com"
+                }
+            ],
+            "description": "Laravel Cashier provides an expressive, fluent interface to Stripe's subscription billing services.",
+            "keywords": [
+                "billing",
+                "laravel",
+                "stripe"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/cashier/issues",
+                "source": "https://github.com/laravel/cashier"
+            },
+            "time": "2024-08-20T15:24:41+00:00"
+        },
+        {
+            "name": "laravel/framework",
+            "version": "v11.21.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "9d9d36708d56665b12185493f684abce38ad2d30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/9d9d36708d56665b12185493f684abce38ad2d30",
+                "reference": "9d9d36708d56665b12185493f684abce38ad2d30",
                 "shasum": ""
             },
             "require": {
@@ -1618,20 +1765,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-08-06T14:39:21+00:00"
+            "time": "2024-08-20T15:00:52+00:00"
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.1.24",
+            "version": "v0.1.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "409b0b4305273472f3754826e68f4edbd0150149"
+                "reference": "7b4029a84c37cb2725fc7f011586e2997040bc95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/409b0b4305273472f3754826e68f4edbd0150149",
-                "reference": "409b0b4305273472f3754826e68f4edbd0150149",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/7b4029a84c37cb2725fc7f011586e2997040bc95",
+                "reference": "7b4029a84c37cb2725fc7f011586e2997040bc95",
                 "shasum": ""
             },
             "require": {
@@ -1674,9 +1821,9 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.1.24"
+                "source": "https://github.com/laravel/prompts/tree/v0.1.25"
             },
-            "time": "2024-06-17T13:58:22+00:00"
+            "time": "2024-08-12T22:06:33+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -2301,6 +2448,94 @@
             "time": "2024-01-28T23:22:08+00:00"
         },
         {
+            "name": "moneyphp/money",
+            "version": "v4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/moneyphp/money.git",
+                "reference": "a1daa7daf159b4044e3d0c34c41fe2be5860e850"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moneyphp/money/zipball/a1daa7daf159b4044e3d0c34c41fe2be5860e850",
+                "reference": "a1daa7daf159b4044e3d0c34c41fe2be5860e850",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-filter": "*",
+                "ext-json": "*",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "require-dev": {
+                "cache/taggable-cache": "^1.1.0",
+                "doctrine/coding-standard": "^12.0",
+                "doctrine/instantiator": "^1.5.0 || ^2.0",
+                "ext-gmp": "*",
+                "ext-intl": "*",
+                "florianv/exchanger": "^2.8.1",
+                "florianv/swap": "^4.3.0",
+                "moneyphp/crypto-currencies": "^1.1.0",
+                "moneyphp/iso-currencies": "^3.4",
+                "php-http/message": "^1.16.0",
+                "php-http/mock-client": "^1.6.0",
+                "phpbench/phpbench": "^1.2.5",
+                "phpunit/phpunit": "^10.5.9",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "psr/cache": "^1.0.1 || ^2.0 || ^3.0",
+                "vimeo/psalm": "~5.20.0"
+            },
+            "suggest": {
+                "ext-gmp": "Calculate without integer limits",
+                "ext-intl": "Format Money objects with intl",
+                "florianv/exchanger": "Exchange rates library for PHP",
+                "florianv/swap": "Exchange rates library for PHP",
+                "psr/cache-implementation": "Used for Currency caching"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Money\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mathias Verraes",
+                    "email": "mathias@verraes.net",
+                    "homepage": "http://verraes.net"
+                },
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                },
+                {
+                    "name": "Frederik Bosch",
+                    "email": "f.bosch@genkgo.nl"
+                }
+            ],
+            "description": "PHP implementation of Fowler's Money pattern",
+            "homepage": "http://moneyphp.org",
+            "keywords": [
+                "Value Object",
+                "money",
+                "vo"
+            ],
+            "support": {
+                "issues": "https://github.com/moneyphp/money/issues",
+                "source": "https://github.com/moneyphp/money/tree/v4.5.0"
+            },
+            "time": "2024-02-15T19:47:21+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.7.0",
             "source": {
@@ -2469,16 +2704,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.7.0",
+            "version": "3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "cb4374784c87d0a0294e8513a52eb63c0aff3139"
+                "reference": "bbd3eef89af8ba66a3aa7952b5439168fbcc529f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/cb4374784c87d0a0294e8513a52eb63c0aff3139",
-                "reference": "cb4374784c87d0a0294e8513a52eb63c0aff3139",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bbd3eef89af8ba66a3aa7952b5439168fbcc529f",
+                "reference": "bbd3eef89af8ba66a3aa7952b5439168fbcc529f",
                 "shasum": ""
             },
             "require": {
@@ -2571,7 +2806,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-16T22:29:20+00:00"
+            "time": "2024-08-19T06:22:39+00:00"
         },
         {
             "name": "nette/schema",
@@ -2866,6 +3101,84 @@
                 }
             ],
             "time": "2024-03-06T16:17:14+00:00"
+        },
+        {
+            "name": "nyholm/psr7",
+            "version": "1.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nyholm/psr7.git",
+                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/aa5fc277a4f5508013d571341ade0c3886d4d00e",
+                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 || ^2.0"
+            },
+            "provide": {
+                "php-http/message-factory-implementation": "1.0",
+                "psr/http-factory-implementation": "1.0",
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "http-interop/http-factory-tests": "^0.9",
+                "php-http/message-factory": "^1.0",
+                "php-http/psr7-integration-tests": "^1.0",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.4",
+                "symfony/error-handler": "^4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nyholm\\Psr7\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tobias Nyholm",
+                    "email": "tobias.nyholm@gmail.com"
+                },
+                {
+                    "name": "Martijn van der Ven",
+                    "email": "martijn@vanderven.se"
+                }
+            ],
+            "description": "A fast PHP7 implementation of PSR-7",
+            "homepage": "https://tnyholm.se",
+            "keywords": [
+                "psr-17",
+                "psr-7"
+            ],
+            "support": {
+                "issues": "https://github.com/Nyholm/psr7/issues",
+                "source": "https://github.com/Nyholm/psr7/tree/1.8.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Zegnat",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-11-13T09:31:12+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -3391,16 +3704,16 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
+                "reference": "79dff0b268932c640297f5208d6298f71855c03e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/79dff0b268932c640297f5208d6298f71855c03e",
+                "reference": "79dff0b268932c640297f5208d6298f71855c03e",
                 "shasum": ""
             },
             "require": {
@@ -3435,9 +3748,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.0"
+                "source": "https://github.com/php-fig/log/tree/3.0.1"
             },
-            "time": "2021-07-14T16:46:02+00:00"
+            "time": "2024-08-21T13:31:24+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -3854,6 +4167,243 @@
                 }
             ],
             "time": "2024-04-27T21:32:50+00:00"
+        },
+        {
+            "name": "sentry/sentry",
+            "version": "4.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getsentry/sentry-php.git",
+                "reference": "788ec170f51ebb22f2809a1e3f78b19ccd39b70d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/788ec170f51ebb22f2809a1e3f78b19ccd39b70d",
+                "reference": "788ec170f51ebb22f2809a1e3f78b19ccd39b70d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/psr7": "^1.8.4|^2.1.1",
+                "jean85/pretty-package-versions": "^1.5|^2.0.4",
+                "php": "^7.2|^8.0",
+                "psr/log": "^1.0|^2.0|^3.0",
+                "symfony/options-resolver": "^4.4.30|^5.0.11|^6.0|^7.0"
+            },
+            "conflict": {
+                "raven/raven": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.4",
+                "guzzlehttp/promises": "^1.0|^2.0",
+                "guzzlehttp/psr7": "^1.8.4|^2.1.1",
+                "monolog/monolog": "^1.6|^2.0|^3.0",
+                "phpbench/phpbench": "^1.0",
+                "phpstan/phpstan": "^1.3",
+                "phpunit/phpunit": "^8.5.14|^9.4",
+                "symfony/phpunit-bridge": "^5.2|^6.0|^7.0",
+                "vimeo/psalm": "^4.17"
+            },
+            "suggest": {
+                "monolog/monolog": "Allow sending log messages to Sentry by using the included Monolog handler."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Sentry\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sentry",
+                    "email": "accounts@sentry.io"
+                }
+            ],
+            "description": "PHP SDK for Sentry (http://sentry.io)",
+            "homepage": "http://sentry.io",
+            "keywords": [
+                "crash-reporting",
+                "crash-reports",
+                "error-handler",
+                "error-monitoring",
+                "log",
+                "logging",
+                "profiling",
+                "sentry",
+                "tracing"
+            ],
+            "support": {
+                "issues": "https://github.com/getsentry/sentry-php/issues",
+                "source": "https://github.com/getsentry/sentry-php/tree/4.9.0"
+            },
+            "funding": [
+                {
+                    "url": "https://sentry.io/",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://sentry.io/pricing/",
+                    "type": "custom"
+                }
+            ],
+            "time": "2024-08-08T14:40:50+00:00"
+        },
+        {
+            "name": "sentry/sentry-laravel",
+            "version": "4.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getsentry/sentry-laravel.git",
+                "reference": "2bbcb7e81097993cf64d5b296eaa6d396cddd5a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getsentry/sentry-laravel/zipball/2bbcb7e81097993cf64d5b296eaa6d396cddd5a7",
+                "reference": "2bbcb7e81097993cf64d5b296eaa6d396cddd5a7",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0",
+                "nyholm/psr7": "^1.0",
+                "php": "^7.2 | ^8.0",
+                "sentry/sentry": "^4.9",
+                "symfony/psr-http-message-bridge": "^1.0 | ^2.0 | ^6.0 | ^7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.11",
+                "guzzlehttp/guzzle": "^7.2",
+                "laravel/folio": "^1.1",
+                "laravel/framework": "^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0",
+                "livewire/livewire": "^2.0 | ^3.0",
+                "mockery/mockery": "^1.3",
+                "orchestra/testbench": "^4.7 | ^5.1 | ^6.0 | ^7.0 | ^8.0 | ^9.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^8.4 | ^9.3 | ^10.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sentry\\Laravel\\ServiceProvider",
+                        "Sentry\\Laravel\\Tracing\\ServiceProvider"
+                    ],
+                    "aliases": {
+                        "Sentry": "Sentry\\Laravel\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Sentry\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sentry",
+                    "email": "accounts@sentry.io"
+                }
+            ],
+            "description": "Laravel SDK for Sentry (https://sentry.io)",
+            "homepage": "https://sentry.io",
+            "keywords": [
+                "crash-reporting",
+                "crash-reports",
+                "error-handler",
+                "error-monitoring",
+                "laravel",
+                "log",
+                "logging",
+                "profiling",
+                "sentry",
+                "tracing"
+            ],
+            "support": {
+                "issues": "https://github.com/getsentry/sentry-laravel/issues",
+                "source": "https://github.com/getsentry/sentry-laravel/tree/4.8.0"
+            },
+            "funding": [
+                {
+                    "url": "https://sentry.io/",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://sentry.io/pricing/",
+                    "type": "custom"
+                }
+            ],
+            "time": "2024-08-15T19:03:01+00:00"
+        },
+        {
+            "name": "stripe/stripe-php",
+            "version": "v13.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "a3d5c1677ef8bdba10800e7dc3825f56f573e039"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/a3d5c1677ef8bdba10800e7dc3825f56f573e039",
+                "reference": "a3d5c1677ef8bdba10800e7dc3825f56f573e039",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.5.0",
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^5.7 || ^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stripe\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+            "support": {
+                "issues": "https://github.com/stripe/stripe-php/issues",
+                "source": "https://github.com/stripe/stripe-php/tree/v13.0.0"
+            },
+            "time": "2023-10-16T20:28:45+00:00"
         },
         {
             "name": "symfony/clock",
@@ -5046,6 +5596,73 @@
             "time": "2024-06-28T10:03:55+00:00"
         },
         {
+            "name": "symfony/options-resolver",
+            "version": "v7.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/options-resolver.git",
+                "reference": "47aa818121ed3950acd2b58d1d37d08a94f9bf55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/47aa818121ed3950acd2b58d1d37d08a94f9bf55",
+                "reference": "47aa818121ed3950acd2b58d1d37d08a94f9bf55",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.5|^3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\OptionsResolver\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides an improved replacement for the array_replace PHP function",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "config",
+                "configuration",
+                "options"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/options-resolver/tree/v7.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-05-31T14:57:53+00:00"
+        },
+        {
             "name": "symfony/polyfill-ctype",
             "version": "v1.30.0",
             "source": {
@@ -5185,6 +5802,90 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.30.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-05-31T15:07:36+00:00"
+        },
+        {
+            "name": "symfony/polyfill-intl-icu",
+            "version": "v1.30.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-intl-icu.git",
+                "reference": "e76343c631b453088e2260ac41dfebe21954de81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-icu/zipball/e76343c631b453088e2260ac41dfebe21954de81",
+                "reference": "e76343c631b453088e2260ac41dfebe21954de81",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "suggest": {
+                "ext-intl": "For best performance and support of other locales than \"en\""
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Icu\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ],
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for intl's ICU-related data and classes",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "icu",
+                "intl",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-icu/tree/v1.30.0"
             },
             "funding": [
                 {
@@ -5815,6 +6516,89 @@
                 }
             ],
             "time": "2024-07-26T12:44:47+00:00"
+        },
+        {
+            "name": "symfony/psr-http-message-bridge",
+            "version": "v7.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/psr-http-message-bridge.git",
+                "reference": "1365d10f5476f74a27cf9c2d1eee70c069019db0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/psr-http-message-bridge/zipball/1365d10f5476f74a27cf9c2d1eee70c069019db0",
+                "reference": "1365d10f5476f74a27cf9c2d1eee70c069019db0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "psr/http-message": "^1.0|^2.0",
+                "symfony/http-foundation": "^6.4|^7.0"
+            },
+            "conflict": {
+                "php-http/discovery": "<1.15",
+                "symfony/http-kernel": "<6.4"
+            },
+            "require-dev": {
+                "nyholm/psr7": "^1.1",
+                "php-http/discovery": "^1.15",
+                "psr/log": "^1.1.4|^2|^3",
+                "symfony/browser-kit": "^6.4|^7.0",
+                "symfony/config": "^6.4|^7.0",
+                "symfony/event-dispatcher": "^6.4|^7.0",
+                "symfony/framework-bundle": "^6.4|^7.0",
+                "symfony/http-kernel": "^6.4|^7.0"
+            },
+            "type": "symfony-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Bridge\\PsrHttpMessage\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "PSR HTTP message bridge",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr-17",
+                "psr-7"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/psr-http-message-bridge/tree/v7.1.3"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-07-17T06:10:24+00:00"
         },
         {
             "name": "symfony/routing",
@@ -7123,65 +7907,6 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.0.1"
             },
             "time": "2020-07-09T08:09:16+00:00"
-        },
-        {
-            "name": "jean85/pretty-package-versions",
-            "version": "2.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Jean85/pretty-package-versions.git",
-                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/f9fdd29ad8e6d024f52678b570e5593759b550b4",
-                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4",
-                "shasum": ""
-            },
-            "require": {
-                "composer-runtime-api": "^2.0.0",
-                "php": "^7.1|^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.2",
-                "jean85/composer-provided-replaced-stub-package": "^1.0",
-                "phpstan/phpstan": "^1.4",
-                "phpunit/phpunit": "^7.5|^8.5|^9.4",
-                "vimeo/psalm": "^4.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Jean85\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alessandro Lai",
-                    "email": "alessandro.lai85@gmail.com"
-                }
-            ],
-            "description": "A library to get pretty versions strings of installed dependencies",
-            "keywords": [
-                "composer",
-                "package",
-                "release",
-                "versions"
-            ],
-            "support": {
-                "issues": "https://github.com/Jean85/pretty-package-versions/issues",
-                "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.6"
-            },
-            "time": "2024-03-08T09:58:59+00:00"
         },
         {
             "name": "laravel/breeze",

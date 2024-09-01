@@ -12,6 +12,13 @@ export default {
 
     theme: {
         extend: {
+            colors:{
+                pastelgreen: '#35BF5C',
+                mintGreen: '#DCFFFD',
+                oldGold: '#D9B830',
+                richBlack: '#011627',
+                darkOrange: '#F97316',
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },

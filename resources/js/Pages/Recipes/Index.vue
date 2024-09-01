@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, watch, onMounted } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { router, usePage, Link } from "@inertiajs/vue3";
 import axios from "axios";
 import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
@@ -205,9 +205,9 @@ const toggleBookmark = async (recipe) => {
                 <!-- Add buttons to toggle feed between All and following -->
                 <div class="sticky top-0 z-10 flex justify-center space-x-4 mb-4">
                     <Panel class="container py-3 text-center space-x-8">
-                        <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-orange-400 text-white'" class="p-2 px-4 rounded-lg">Explore</button>
-                        <button @click="showNewUploads" :class="showFollowing ? 'bg-orange-400 text-white' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following
-                            <span v-if="notifications.length > 0" class="ml-2 bg-orange-400 text-white rounded-full px-2">{{notifications.length}}</span>
+                        <button @click="toggleFeed('all')" :class="showFollowing ? 'bg-gray-300' : 'bg-darkOrange text-mintGreen'" class="p-2 px-4 rounded-lg">Explore</button>
+                        <button @click="showNewUploads" :class="showFollowing ? 'bg-darkOrange text-mintGreen' : 'bg-gray-300'" class="p-2 px-4 rounded-lg">Following
+                            <span v-if="notifications.length > 0" class="ml-2 bg-darkOrange text-mintGreen rounded-full px-2">{{notifications.length}}</span>
                         </button>
                     </Panel>
                 </div>
@@ -221,7 +221,7 @@ const toggleBookmark = async (recipe) => {
                     <RecipeCard v-for="recipe in recipes.data" v-if="searchType === 'recipes'" :key="recipe.id" :recipe="recipe"  @toggleBookmark="toggleBookmark" :navigateToRecipe="navigateToRecipe"/>
                     <UserCard v-for="user in users.data" v-if="searchType === 'users'" :key="user.id"  :user="user" :navigateToUserProfile="navigateToUserProfile" class="mb-6"/>
                     <div v-if="searchType === 'recipes'">
-                        <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
+                        <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-mintGreen py-2 px-4 rounded-lg mt-4 w-full">
                             Load More
                         </button>
                     </div>
@@ -239,19 +239,26 @@ const toggleBookmark = async (recipe) => {
                                     <option value="recipes">Recipes</option>
                                     <option value="users">Users</option>
                                 </select>
-                                <button type="submit" class="bg-orange-500 text-white py-2 px-4 rounded-lg md:w-full">Search</button>
+                                <button type="submit" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg md:w-full">Search</button>
                             </form>
                         </div>
                     </div>
                     <div class="hidden md:block row-start-2 bg-green-200 p-4 rounded-lg text-center">
                         <h2 class="text-lg font-bold mb-4">Collections</h2>
                         <div v-for="category in categories" :key="category.id" class="mb-2">
-                            <button class="bg-orange-500 text-white py-2 px-4 rounded-xl w-3/4 mb-4" @click="navigateToCategory(category.id)">
+                            <button class="bg-darkOrange text-mintGreen py-2 px-4 rounded-xl w-3/4 mb-4" @click="navigateToCategory(category.id)">
                                 {{ category.title }}
                             </button>
                         </div>
                     </div>
                 </Panel>
+                <div class="flex justify-center">
+                    <ul class="flex space-x-4 ml-2 mt-4">
+                        <Link :href="route('about')"><li>About</li></Link>
+                        <Link :href="route('career')"><li>Career</li></Link>
+                        <Link :href="route('terms')"><li>Terms of service</li></Link>
+                    </ul>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>

@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@inertiajs/progress": "^0.1.2",
+        "@stripe/stripe-js": "^4.3.0",
         "fraction.js": "^4.3.7"
     }
 }

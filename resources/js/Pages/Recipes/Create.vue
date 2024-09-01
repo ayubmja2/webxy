@@ -136,13 +136,13 @@ const submit = async () => {
 
                             <button type="button" @click="removeIngredient(index)" class="text-red-500">Remove</button>
                         </div>
-                        <button type="button" @click="addIngredient" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Add Ingredient</button>
+                        <button type="button" @click="addIngredient" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Add Ingredient</button>
                     </div>
                     <div class="mb-4">
                         <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
                         <input type="file" id="image" @change="handleImage" class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm">
                     </div>
-                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Submit</button>
+                    <button type="submit" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Submit</button>
                 </form>
             </Panel>
         </div>

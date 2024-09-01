@@ -119,4 +119,15 @@
         Route::get('/payment-cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
     });
 
+    Route::get('/about', function (){
+        return Inertia::render('About/Index');
+    })->name('about');
+
+    Route::get('/career', function(){
+        return Inertia::render('Career/Index');
+    })->name('career');
+    Route::get('/terms', function(){
+        return Inertia::render('TOS/Index');
+    })->name('terms');
+
     require __DIR__ . '/auth.php';

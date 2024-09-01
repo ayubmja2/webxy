@@ -254,9 +254,9 @@ const toggleBookmark = async (recipe) => {
                 </Panel>
                 <div class="flex justify-center">
                     <ul class="flex space-x-4 ml-2 mt-4">
-                        <Link><li>About</li></Link>
-                        <Link><li>Career</li></Link>
-                        <Link><li>Terms of service</li></Link>
+                        <Link :href="route('about')"><li>About</li></Link>
+                        <Link :href="route('career')"><li>Career</li></Link>
+                        <Link :href="route('terms')"><li>Terms of service</li></Link>
                     </ul>
                 </div>
             </div>

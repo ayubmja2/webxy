@@ -24,9 +24,26 @@ import {Link} from "@inertiajs/vue3";
               </Panel>
 
               <Panel>
+                  <div class="container">
+                     <div class="flex flex-col">
+                         <div class="grid grid-rows-1">
+                            <div class="grid grid-cols-3">
+                                <div class="col-start-2 font-medium text-center">
+                                    <h1>Friday</h1>
+                                </div>
+                                <div class="col-start-3 justify-self-end">
+                                    <i class="fa-solid fa-plus my-auto text-mintGreen text-lg"></i>
+                                </div>
+                            </div>
+                         </div>
 
+                     </div>
+                  </div>
               </Panel>
-              <Panel>3</Panel>
+              <Panel>
+                  <input type="text" placeholder="Recipe Name">
+                  <button class="p-2 bg-white font-medium">Search</button>
+              </Panel>
           </div>
       </div>
     </AuthenticatedLayout>

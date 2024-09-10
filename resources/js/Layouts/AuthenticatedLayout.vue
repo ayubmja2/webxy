@@ -41,7 +41,7 @@ const showingNavigationDropdown = ref(false);
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('mealplanner.index')" :active="route().current('mealplanner.index')">
-                                    Meal Panner
+                                    Meal Planner
                                 </NavLink>
                             </div>
                         </div>

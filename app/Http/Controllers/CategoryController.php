@@ -59,6 +59,10 @@ class CategoryController extends Controller
         //
     }
 
+    public function getAllCategories(){
+        $categories = Category::all();
+        return response()->json($categories);
+    }
     /**
      * Show the form for editing the specified resource.
      */

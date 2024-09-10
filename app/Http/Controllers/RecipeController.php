@@ -249,7 +249,19 @@
                     'query' => $query,
                 ]);
             }
+        }
 
+        public function searchByCategory(Request $request) {
+            $request->validate([
+                'category_id' => 'required|integer|exists:categories,id',
+                'search' => 'nullable|string',
+            ]);
+
+            $recipes = Recipe::whereHas('categories', function ($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })->where('title', 'like', '%' . $request->search . '%')->get();
+
+            return response()->json($recipes);
         }
 
         public function bookmark(Request $request, Recipe $recipe) {

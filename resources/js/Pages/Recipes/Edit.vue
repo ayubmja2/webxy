@@ -9,32 +9,21 @@ const { props } = usePage();
 const recipe = ref(props.recipe || {});
 
 // Define the measurement units
-
-const measurementUnits = ref(
-    [
-        'Gram (g)',
-        'Kilogram (kg)',
-        'Ounce (oz)',
-        'Pound (lb)',
-        'Teaspoon (tsp)',
-        'Tablespoon (tbsp)',
-        'Cup (c)',
-        'Fluid Ounce (fl oz)',
-        'Pint (pt)',
-        'Quart (qt)',
-        'Gallon (gal)',
-        'Milliliter (ml)',
-        'Liter (l)'
-    ]);
-
-// Define the Quantity
-
-const quantities = ref(['1/4', '1/2', '1/8', '1/16', '1', '2', '3',  '4', '5', '6']);
-
-// Function to check if a string is a fraction
-function isFraction(value) {
-    return value.includes('/');
-}
+const measurementUnits = ref([
+    'Gram (g)',
+    'Kilogram (kg)',
+    'Ounce (oz)',
+    'Pound (lb)',
+    'Teaspoon (tsp)',
+    'Tablespoon (tbsp)',
+    'Cup (c)',
+    'Fluid Ounce (fl oz)',
+    'Pint (pt)',
+    'Quart (qt)',
+    'Gallon (gal)',
+    'Milliliter (ml)',
+    'Liter (l)'
+]);
 
 // Function to convert decimal to fraction
 function toFraction(decimal) {
@@ -57,7 +46,6 @@ function toFraction(decimal) {
     if (h1 % k1 === 0) {
         return `${h1 / k1}`;
     } else {
-        // If the fraction is an improper fraction, return as a mixed fraction
         const wholePart = Math.floor(h1 / k1);
         const remainder = h1 % k1;
         if (wholePart === 0) {
@@ -69,13 +57,11 @@ function toFraction(decimal) {
         }
     }
 }
-// Function to convert fraction or mixed fraction to decimal
-function fractionToDecimal(fraction) {
-    if(typeof fraction != 'string'){
-        fraction = fraction.toString();
-    }
 
-    let parts = fraction.split(' ');
+// Function to convert fraction to decimal
+function fractionToDecimal(fraction) {
+    if (typeof fraction !== 'string') fraction = fraction.toString();
+    const parts = fraction.split(' ');
     let integerPart = 0;
     let fractionPart = fraction;
 
@@ -88,18 +74,15 @@ function fractionToDecimal(fraction) {
     return denominator ? integerPart + (numerator / denominator) : parseFloat(fraction);
 }
 
-
+// Convert quantity from decimal to fraction format
 function formatQuantity(value) {
-    if (typeof value === 'string' && value.includes(' ')) {
-        // Handle mixed fraction like "1 1/2"
-        return value;
-    }
     const decimalValue = parseFloat(value);
     if (!isNaN(decimalValue) && decimalValue % 1 !== 0) {
         return toFraction(decimalValue);
     }
     return value;
 }
+
 // Initialize form with default values
 const form = ref({
     title: recipe.value.title || '',
@@ -108,7 +91,7 @@ const form = ref({
     image_url: null,
     ingredients: (recipe.value.ingredients || []).map(ingredient => ({
         name: ingredient.name,
-        quantity: ingredient.pivot.quantity,
+        quantity: formatQuantity(ingredient.pivot.quantity), // Convert to fraction on load
         unit: ingredient.pivot.unit
     }))
 });
@@ -116,7 +99,7 @@ const form = ref({
 const ingredientError = ref('');
 
 const addIngredient = () => {
-    form.value.ingredients.push({ name: '', quantity: quantities.value[0], unit: measurementUnits.value[0] });
+    form.value.ingredients.push({ name: '', quantity: '', unit: measurementUnits.value[0] });
     ingredientError.value = ''; // Clear the error when adding an ingredient
 };
 
@@ -167,7 +150,7 @@ const submit = () => {
     formData.append('_method', 'PATCH');
     form.value.ingredients.forEach((ingredient, index) => {
         formData.append(`ingredients[${index}][name]`, ingredient.name);
-        formData.append(`ingredients[${index}][quantity]`, fractionToDecimal(ingredient.quantity));
+        formData.append(`ingredients[${index}][quantity]`, fractionToDecimal(ingredient.quantity)); // Convert to decimal before submission
         formData.append(`ingredients[${index}][unit]`, ingredient.unit);
     });
     router.post(`/recipes/${recipe.value.id}`, formData);
@@ -175,7 +158,7 @@ const submit = () => {
 
 // Delete function
 const deleteRecipe = () => {
-    if(confirm('Are you sure you want to delete this recipe')){
+    if(confirm('Are you sure you want to delete this recipe')) {
         router.delete(`/recipes/${recipe.value.id}`, {
             onSuccess: () => {
                 router.visit('/recipes');
@@ -190,64 +173,48 @@ const deleteRecipe = () => {
 
 <template>
     <AuthenticatedLayout>
-        <div class="container mx-auto p-4">
-           <Panel>
-               <h1 class="text-2xl font-bold mb-4">Edit your recipe</h1>
-               <form @submit.prevent="submit">
-                   <div class="mb-4">
-                       <label for="title" class="block text-sm font-medium text-gray-700">Recipe Name</label>
-                       <input type="text" id="title" v-model="form.title"
-                              class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm">
-                   </div>
-                   <div class="mb-4">
-                       <label for="description" class="block text-sm font-medium text-gray-700">Recipe Description</label>
-                       <textarea id="description" v-model="form.description"
-                                 class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                   </div>
-                   <div class="mb-4">
-                       <label for="instruction" class="block text-sm font-medium text-gray-700">Recipe Instruction</label>
-                       <textarea id="instruction" v-model="form.instruction"
-                                 class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                   </div>
-                   <div class="mb-4">
-                       <label class="block text-sm font-medium text-gray-700">Ingredients</label>
+        <div class="p-4">
+            <Panel>
+                <h1 class="text-2xl font-bold mb-6">Edit your recipe</h1>
+                <form @submit.prevent="submit">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <Panel class="space-y-4">
+                            <label for="title" class="block text-sm font-medium text-gray-700">Recipe Name</label>
+                            <input type="text" id="title" v-model="form.title" class="mt-1 p-2 block w-full rounded-xl border-gray-300 shadow-sm"/>
 
-                       <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex items-center mb-2">
-                           <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="mr-2 p-2 flex-1 rounded-md border-gray-300 shadow-sm">
-                           <!-- Custom Quantity Input Field -->
-                           <input type="text" :value="formatQuantity(ingredient.quantity)" placeholder="e.g., 1 1/2" class="mr-4 p-2 rounded-md border-gray-300 shadow-sm">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="description" v-model="form.description" class="mt-1 p-2 block w-full rounded-2xl border-gray-300 shadow-sm h-40 resize-none"></textarea>
 
-                           <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">
-                               <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>
-                           </select>
+                            <label for="instruction" class="block text-sm font-medium text-gray-700">Instructions</label>
+                            <textarea id="instruction" v-model="form.instruction" class="mt-1 p-2 block w-full rounded-2xl border-gray-300 shadow-sm h-40 resize-none"></textarea>
 
-                           <button type="button" @click="removeIngredient(index)" class="text-red-500">Remove</button>
-                       </div>
-                       <button type="button" @click="addIngredient" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Add
-                           Ingredient
-                       </button>
-                       <div v-if="ingredientError" class="text-red-500 text-sm mt-2">{{ ingredientError }}</div>
-                   </div>
-                   <div class="mb-4">
-                       <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
-                       <input type="file" id="image" @change="handleImage"
-                              class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm">
-                   </div>
-                   <button type="submit" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Submit</button>
-                   <button type="button" @click="deleteRecipe" class="bg-red-700 text-mintGreen py-2 px-4 rounded-lg">Delete</button>
-               </form>
-           </Panel>
+                            <div class="space-y-6">
+                                <label for="image" class="text-sm font-medium text-gray-700">Image</label>
+                                <div class="flex justify-between">
+                                    <input type="file" id="image" @change="handleImage" class="mt-1 p-2 block w-1/3 rounded-xl border-gray-300 shadow-sm">
+                                    <button type="button" @click="deleteRecipe" class="bg-red-700 text-mintGreen py-2 px-4 rounded-lg">Delete</button>
+                                </div>
+                            </div>
+                        </Panel>
+                        <Panel>
+                            <div class="mb-4 space-y-4">
+                                <label class="block text-sm font-medium text-gray-700">Ingredients</label>
+                                <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex flex-wrap items-center mb-2 space-y-2 md:space-y-0">
+                                    <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="block w-full md:w-1/4 p-2 flex-1 rounded-xl border-gray-300 shadow-sm mr-2">
+                                    <input type="text" v-model="ingredient.quantity" placeholder="e.g., 1 1/2" class="mr-4 p-2 rounded-md border-gray-300 shadow-sm">
+                                    <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">
+                                        <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>
+                                    </select>
+                                    <button type="button" @click="removeIngredient(index)" class="text-red-500 ml-2" :disabled="form.ingredients.length === 1">Remove</button>
+                                </div>
+
+                                <button type="button" @click="addIngredient" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Add Ingredient</button>
+                            </div>
+                        </Panel>
+                        <button type="submit" class="mt-4 bg-darkOrange text-mintGreen p-3 px-4 rounded-2xl col-span-2 w-3/4 justify-self-center">Submit</button>
+                    </div>
+                </form>
+            </Panel>
         </div>
     </AuthenticatedLayout>
 </template>
-
-<style scoped>
-.container {
-    max-width: 800px;
-}
-.quantity-select,
-.unit-select {
-    appearance: none;
-    padding-right:2rem;
-}
-</style>

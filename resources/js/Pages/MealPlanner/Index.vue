@@ -338,7 +338,7 @@ const navigateToRecipe = (id) => {
               <Panel>
                   <div class="container">
                       <select v-model="selectedCategory" class="w-full p-2 rounded border text-black">
-                          <option disabled value="">Select a Category</option>
+                          <option disabled :value="null">Select a Category</option>
                           <option v-for="category in categories" :key="category.id" :value="category.id">
                               {{ category.title }}
                           </option>

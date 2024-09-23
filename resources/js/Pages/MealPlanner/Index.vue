@@ -71,26 +71,6 @@ const allowDrop = (event) => {
     event.preventDefault(); //Necessary to allow dropping
 };
 
-// const onDrop = async (meal) => {
-//     if (!meal.recipes) {
-//         meal.recipes = [];
-//     }
-//
-//     if (draggedRecipe.value) {
-//         meal.recipes.push(draggedRecipe.value);
-//         draggedRecipe.value = null;
-//
-//         // Save the updated meal plan
-//         try {
-//             await axios.post("/meal-plans", {
-//                 day: selectedDay.value,
-//                 meals: mealPlans.value[selectedDay.value]
-//             });
-//         } catch (error) {
-//             console.error("Failed to save meal plan:", error);
-//         }
-//     }
-// };
 
 const onDrop = async (meal) => {
     if (!meal.recipes) {
@@ -114,25 +94,6 @@ const onDrop = async (meal) => {
         }
     }
 };
-
-
-
-// Delete recipe from a meal
-// const removeRecipeFromCategory = (meal, recipeIndex) => {
-//     if (meal.recipes) {
-//         meal.recipes.splice(recipeIndex, 1);
-//
-//         // Optionally save after deletion
-//         try {
-//             axios.post("/meal-plans", {
-//                 day: selectedDay.value,
-//                 meals: mealPlans.value[selectedDay.value]
-//             });
-//         } catch (error) {
-//             console.error("Failed to save meal plan after deletion:", error);
-//         }
-//     }
-// };
 
 const removeRecipeFromCategory = (meal, recipeIndex) => {
     if (meal.recipes) {
@@ -171,47 +132,6 @@ const addMealBoxes = async () => {
         }
     }
 };
-
-// Delete the entire meal plan for the selected day
-// const deleteMealPlan = async () => {
-//     try {
-//         await axios.delete(`/meal-plans`);
-//         mealPlans.value[selectedDay.value] = [...defaultMealPlan];
-//     } catch (error) {
-//         console.error("Failed to delete meal plan:", error);
-//     }
-// };
-// const deleteMealPlan = async () => {
-//     try {
-//         await axios.delete('/meal-plans', {
-//             data: {
-//                 day: selectedDay.value
-//             }
-//         });
-//         mealPlans.value[selectedDay.value] = [...defaultMealPlan];
-//     } catch (error) {
-//         console.error("Failed to delete meal plan:", error);
-//     }
-// };
-
-// const deleteMealPlan = async () => {
-//     try {
-//         // Make DELETE request to the server
-//         await axios.delete('/meal-plans', {
-//             data: {
-//                 day: selectedDay.value
-//             }
-//         });
-//
-//         // Immediately reset the meal plan in the local state for the selected day
-//         mealPlans.value[selectedDay.value] = [...defaultMealPlan];
-//
-//         // Optionally show a success message or feedback to the user
-//         console.log("Meal plan deleted successfully");
-//     } catch (error) {
-//         console.error("Failed to delete meal plan:", error);
-//     }
-// };
 
 const deleteMealPlan = async () => {
     try {
@@ -297,7 +217,6 @@ const navigateToRecipe = (id) => {
                                 </div>
                                 <div class="col-start-3 justify-self-end space-x-4">
                                     <i @click="deleteMealPlan" class="fa-solid fa-trash my-auto text-red-600 text-lg"></i>
-<!--                                    <i @click="addMealBoxes" class="fa-solid fa-plus my-auto text-mintGreen text-lg"></i>-->
                                 </div>
                             </div>
                          </div>
@@ -320,6 +239,7 @@ const navigateToRecipe = (id) => {
                                          :navigateToRecipe="navigateToRecipe"
                                          :showBookmark="false"
                                          :compact="true"
+                                         :showFooter="false"
                                      />
                                      <!-- Red "x" button to remove the recipe -->
                                      <button
@@ -368,6 +288,7 @@ const navigateToRecipe = (id) => {
                                       :navigateToRecipe="navigateToRecipe"
                                       :showBookmark="false"
                                       :compact="true"
+                                      :showFooter="false"
                                   />
                               </li>
                           </ul>

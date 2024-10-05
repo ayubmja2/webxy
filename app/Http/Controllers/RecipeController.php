@@ -40,7 +40,10 @@
             }else {
 
                 // Retrieve all recipes with their related categories and ingredients using eager loading
-                $recipes = Recipe::with(['categories', 'ingredients', 'user'])
+                $recipes = Recipe::with(['categories', 'ingredients', 'user', 'repost'])
+                    ->withCount(['reposts' => function ($query) {
+                        $query->whereNotNull('repost_id');
+                    }])
                     ->withCount(['likes'])
                     ->orderBy('created_at', 'desc')
                     ->paginate(10);
@@ -49,6 +52,7 @@
             $recipes->getCollection()->transform(function ($recipe) use ($user) {
                 $recipe->is_bookmarked = $user && $user->bookmarkedRecipes->contains($recipe->id);
                 $recipe->is_liked = $user && $user->likedRecipes->contains($recipe->id);
+                $recipe->is_reposted = $user && $user->recipes->where('repost_id', $recipe->id)->isNotEmpty();
                 return $recipe;
             });
 

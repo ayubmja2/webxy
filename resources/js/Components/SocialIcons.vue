@@ -19,7 +19,7 @@ const props = defineProps({
 });
 const isLiked = ref(props.recipe.is_liked || false);
 const likesCount = ref(props.recipe.likes_count || 0);
-
+const repostsCount = ref(props.recipe.reposts_count || 0);
 const toggleBookmark = async (recipe) => {
     try {
         await axios.post(`/recipes/${recipe.id}/bookmark`);
@@ -41,9 +41,9 @@ const emit = defineEmits(['toggleBookmark', 'toggleLike']);
 
 //bookmark
 const isBookmarked = ref(props.isBookmarked !== undefined ? props.isBookmarked : false);
+//reposted
+const isReposted = ref(props.recipe.is_reposted || false);
 
-// //like
-// const isLiked = ref(props.isLiked != undefined ? props.isLiked : false);
 
 watch(() => props.recipe.is_liked, (newVal) => {
     isLiked.value = newVal;
@@ -75,6 +75,16 @@ const handleLike = async () => {
     }
 }
 
+//handles repost
+const handleRepost = async() => {
+    try{
+        await axios.post(`/recipes/${props.recipe.id}/repost`);
+        isReposted.value = true; // update repost state locally
+        repostsCount.value++;
+    }catch (error){
+        console.error("Error reposting recipe:", error);
+    }
+}
 </script>
 
 <template>
@@ -94,10 +104,10 @@ const handleLike = async () => {
 <!--                   <p>0</p>-->
 <!--               </div>-->
                <div class="container grid grid-cols-2 overflow-x-hidden">
-                   <button class="text-gray-500">
+                   <button @click="handleRepost" :class="isReposted ? 'tet-blue-500' : 'text-gray-500'">
                        <i class="fa-solid fa-arrows-rotate"></i>
                    </button>
-                   <p>0</p>
+                   <p>{{repostsCount}}</p>
                </div>
            </div>
            <div class="col-start-2 place-self-end">

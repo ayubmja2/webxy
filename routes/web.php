@@ -9,6 +9,7 @@
     use App\Http\Controllers\PaymentController;
     use App\Http\Controllers\ProfileController;
     use App\Http\Controllers\RecipeController;
+    use App\Http\Controllers\RepostController;
     use Illuminate\Foundation\Application;
     use Illuminate\Foundation\Auth\EmailVerificationRequest;
     use Illuminate\Http\Request;
@@ -126,6 +127,7 @@
 
         // Social routes
         Route::post('/recipes/{recipe}/like', [LikeController::class, 'toggleLike'])->name('recipes.like');
+        Route::post('/recipes/{recipe}/repost', [RepostController::class, 'repost'])->name('recipes.repost');
     });
 
     Route::get('/about', function (){

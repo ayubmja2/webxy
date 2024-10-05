@@ -84,7 +84,6 @@ import {Link} from "@inertiajs/vue3";
                             </ol>
                         </li>
                     </ul>
-                    <p class="mt-6 text-lg leading-8 text-white"> Join us in our journey to create a world where food is not only inclusive but also a source of joy and connection.</p>
                 </div>
             </div>
             <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">

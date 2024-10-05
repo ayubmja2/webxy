@@ -2,7 +2,9 @@
 
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
+    use App\Http\Controllers\LikeController;
     use App\Http\Controllers\MailgunWebhookController;
+    use App\Http\Controllers\MealPlanController;
     use App\Http\Controllers\MealPlannerController;
     use App\Http\Controllers\PaymentController;
     use App\Http\Controllers\ProfileController;
@@ -56,7 +58,6 @@
         // Profile Route
 
         Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
-//        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
         route::post('/profile/update-allergens', [profileController::class, 'updateAllergens'])->name('profile.update-allergens');
@@ -65,7 +66,6 @@
         Route::post('/profile/{username}/unfollow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
         Route::get('/profile/{user}/followers', [ProfileController::class, 'getFollowers']);
         Route::get('/profile/{user}/following', [ProfileController::class, 'getFollowing']);
-
         Route::post('profile/update-bio', [ProfileController::class, 'updateBio'])->name('profile.update-bio');
 
 
@@ -93,17 +93,23 @@
 
         //Bookmark Routes
         Route::post('/recipes/{recipe}/bookmark', [RecipeController::class, 'bookmark']);
+
+        // Search
+        Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
+        Route::post('/recipes/search', [RecipeController::class, 'searchByCategory']);
+        Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
+
         // CookBook Routes
         Route::get('/cookbook', [CookBookController::class, 'index'])->name('cookbook.index');
         Route::post('/cookbook', [CookBookController::class, 'store'])->name('cookbook.store');
         Route::delete('/cookbook/{recipe}', [CookBookController::class, 'destroy'])->name('cookbook.destroy');
 
-        // Search
-        Route::get('search', [RecipeController::class, 'search'])->name('recipes.search');
-        Route::get('/search/users', [ProfileController::class, 'search'])->name('users.search');
-
         // Meal Planner
         Route::get('/mealplanner', [MealPlannerController::class, 'index'])->name('mealplanner.index');
+        Route::get('/meal-plans', [MealPlanController::class, 'index']);
+        Route::get('/categories', [CategoryController::class, 'getAllCategories']);
+        Route::post('/meal-plans', [MealPlanController::class, 'store']);
+        Route::delete('/meal-plans', [MealPlanController::class, 'destroy']);
 
         //Fetch unread notifications
         Route::get('/api/notifications/unread', function(){
@@ -117,6 +123,9 @@
         Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
         Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
         Route::get('/payment-cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+
+        // Social routes
+        Route::post('/recipes/{recipe}/like', [LikeController::class, 'toggleLike'])->name('recipes.like');
     });
 
     Route::get('/about', function (){
@@ -126,6 +135,7 @@
     Route::get('/career', function(){
         return Inertia::render('Career/Index');
     })->name('career');
+
     Route::get('/terms', function(){
         return Inertia::render('TOS/Index');
     })->name('terms');

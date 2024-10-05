@@ -48,4 +48,10 @@
                 $this->attributes['image_url'] = null;
             }
         }
+        public function likedByUsers(){
+            return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+        }
+        public function likes(){
+            return $this->belongsToMany(User::class, 'likes', 'recipe_id', 'user_id')->withTimestamps();
+        }
     }

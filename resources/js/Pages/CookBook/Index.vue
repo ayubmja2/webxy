@@ -6,6 +6,8 @@ import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
 
 const {props} = usePage();
+
+
 // Categories, Recipes, and uncategorized bookmarks data from the backend
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
@@ -57,15 +59,6 @@ const allowDrop = (event) => {
 const navigateToRecipe = (id) => {
     router.get(`/recipes/${id}`);
 };
-
-const navigateToCategory = (id) => {
-    router.get(`/categories/${id}`);
-};
-
-const editRecipe = (id) => {
-    router.get(`/recipes/${id}/edit`);
-};
-
 
 const toggleBookmark = async (recipe) => {
     try {
@@ -146,7 +139,7 @@ onMounted(() => {
                                 <ul class="flex flex-col space-y-2">
                                     <li v-for="bookmark in bookmarkedRecipes" :key="bookmark.id" draggable="true" @dragstart="(event) => dragBookmark(event, bookmark.id)"
                                         class="p-2 rounded-lg">
-                                           <RecipeCard :recipe="bookmark" :isBookmarked="bookmark.is_bookmarked" :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark"/>
+                                           <RecipeCard :recipe="bookmark" :isBookmarked="bookmark.is_bookmarked" :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark" :iconCompact="true" :showSocialIcons="false"/>
                                     </li>
                                 </ul>
                             </div>
@@ -162,7 +155,7 @@ onMounted(() => {
                             <div class="h-40 overflow-x-auto hide-scrollbar">
                                 <ul class="flex space-x-4">
                                     <li class="flex-shrink-0" v-for="recipe in recipes" :key="recipe.id">
-                                        <RecipeCard class="my-recipe" :recipe="recipe"  :navigateToRecipe="navigateToRecipe" :showBookmark="false" :compact="true"/>
+                                        <RecipeCard class="my-recipe" :recipe="recipe"  :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark"  :compact="true" :showFooter="false"/>
                                     </li>
                                 </ul>
                             </div>

@@ -182,19 +182,6 @@ const navigateToUserProfile = (username) => {
 const navigateToCategory = (id) => {
     router.get(`/categories/${id}`);
 };
-
-const editRecipe = (id) => {
-    router.get(`/recipes/${id}/edit`);
-};
-
-const toggleBookmark = async (recipe) => {
-    try {
-        await axios.post(`/recipes/${recipe.id}/bookmark`);
-        recipe.is_bookmarked = !recipe.is_bookmarked;
-    } catch (error) {
-        console.log('Error bookmarking recipe:', error);
-    }
-};
 </script>
 
 <template>
@@ -218,7 +205,7 @@ const toggleBookmark = async (recipe) => {
                     <div v-if="users.data.length === 0 && searchType === 'users' && searchCompleted && !isSearching" class="bg-red-200 p-4 mb-4 rounded-lg">
                         <p>No users found.</p>
                     </div>
-                    <RecipeCard v-for="recipe in recipes.data" v-if="searchType === 'recipes'" :key="recipe.id" :recipe="recipe"  @toggleBookmark="toggleBookmark" :navigateToRecipe="navigateToRecipe"/>
+                    <RecipeCard v-for="recipe in recipes.data" v-if="searchType === 'recipes'" :key="recipe.id" :recipe="recipe"  :navigateToRecipe="navigateToRecipe"/>
                     <UserCard v-for="user in users.data" v-if="searchType === 'users'" :key="user.id"  :user="user" :navigateToUserProfile="navigateToUserProfile" class="mb-6"/>
                     <div v-if="searchType === 'recipes'">
                         <button v-if="recipes.next_page_url" @click="loadMore" class="bg-blue-500 text-mintGreen py-2 px-4 rounded-lg mt-4 w-full">

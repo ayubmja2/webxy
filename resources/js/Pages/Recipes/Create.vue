@@ -102,47 +102,51 @@ const submit = async () => {
         console.error('Error getting socket_id:', error);
     }
 };
-
 </script>
+
 <template>
     <AuthenticatedLayout>
-        <div class="container mx-auto p-4">
+        <div class="p-4">
             <Panel>
-                <h1 class="text-2xl font-bold mb-4">Post your recipe</h1>
+                <h1 class="text-2xl font-bold mb-6">Share your recipe</h1>
                 <form @submit.prevent="submit">
-                    <div class="mb-4">
-                        <label for="title" class="block text-sm font-medium text-gray-700">Recipe Name</label>
-                        <input type="text" id="title" v-model="form.title" class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm">
-                    </div>
-                    <div class="mb-4">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="description" v-model="form.description" class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label for="instruction" class="block text-sm font-medium text-gray-700">Instructions</label>
-                        <textarea id="instruction" v-model="form.instruction" class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Ingredients</label>
-                        <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex items-center mb-2">
-                            <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="mr-2 p-2 flex-1 rounded-md border-gray-300 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <Panel class="space-y-4">
+                            <label for="title" class="block text-sm font-medium text-gray-700">Recipe Name</label>
+                            <input type="text" id="title" v-model="form.title" class="mt-1 p-2 block w-full rounded-xl border-gray-300 shadow-sm"/>
 
-                            <!-- Quantity Input Field -->
-                            <input type="text" v-model="ingredient.quantity" placeholder="e.g., 1 3/4" class="mr-4 ml-4 p-2 pr-4 pl-6 rounded-md border-gray-300 shadow-sm">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="description" v-model="form.description" class="mt-1 p-2 block w-full rounded-2xl border-gray-300 shadow-sm h-40 resize-none"></textarea>
 
-                            <select v-model="ingredient.unit" class="mr-2 p-2 rounded-md border-gray-300 shadow-sm unit-select">
-                                <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>
-                            </select>
+                            <label for="instruction" class="block text-sm font-medium text-gray-700">Instructions</label>
+                            <textarea id="instruction" v-model="form.instruction" class="mt-1 p-2 block w-full rounded-2xl border-gray-300 shadow-sm h-40 resize-none"></textarea>
 
-                            <button type="button" @click="removeIngredient(index)" class="text-red-500">Remove</button>
-                        </div>
-                        <button type="button" @click="addIngredient" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Add Ingredient</button>
+                            <div class="mb-4">
+                                <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
+                                <input type="file" id="image" @change="handleImage" class="mt-1 p-2 block w-full rounded-xl border-gray-300 shadow-sm">
+                            </div>
+                        </Panel>
+                        <Panel>
+                            <div class="mb-4 space-y-4">
+                                <label class="block text-sm font-medium text-gray-700">Ingredients</label>
+                                <!-- Updated the flex to allow wrapping -->
+                                <div v-for="(ingredient, index) in form.ingredients" :key="index" class="flex flex-wrap items-center mb-2 space-y-2 md:space-y-0">
+                                    <input type="text" v-model="ingredient.name" placeholder="Ingredient" class="block w-full md:w-1/4 p-2 flex-1 rounded-xl border-gray-300 shadow-sm mr-2">
+
+                                    <!-- Quantity Input Field -->
+                                    <input type="text" v-model="ingredient.quantity" placeholder="e.g., 1 3/4" class="block w-full md:w-1/5 p-2 rounded-xl border-gray-300 shadow-sm mr-4">
+
+                                    <select v-model="ingredient.unit" class="block w-full md:w-1/4 p-2 rounded-xl border-gray-300 shadow-sm mr-2">
+                                        <option v-for="unit in measurementUnits" :key="unit" :value="unit">{{ unit }}</option>
+                                    </select>
+
+                                    <button type="button" @click="removeIngredient(index)" class="text-red-500 ml-2" :disabled="form.ingredients.length === 1">Remove</button>
+                                </div>
+                                <button type="button" @click="addIngredient" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Add Ingredient</button>
+                            </div>
+                        </Panel>
+                        <button type="submit" class="mt-4 bg-darkOrange text-mintGreen p-3 px-4 rounded-2xl col-span-2 w-3/4 justify-self-center">Submit</button>
                     </div>
-                    <div class="mb-4">
-                        <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
-                        <input type="file" id="image" @change="handleImage" class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm">
-                    </div>
-                    <button type="submit" class="bg-darkOrange text-mintGreen py-2 px-4 rounded-lg">Submit</button>
                 </form>
             </Panel>
         </div>
@@ -150,12 +154,7 @@ const submit = async () => {
 </template>
 
 <style scoped>
-.container {
-    max-width: 800px;
-}
-.quantity-select,
 .unit-select {
-    appearance: none;
-    padding-right:1.5rem;
+    min-width: 100px;
 }
 </style>

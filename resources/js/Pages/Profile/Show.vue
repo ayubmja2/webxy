@@ -214,6 +214,9 @@ const navigateToUserProfile = (username) => {
                     <input type="file" @change="onProfileImageChange" accept="image/*"
                            class="absolute top-0 left-0 opacity-0 cursor-pointer w-full h-full"
                            v-if="props.isOwnProfile">
+                    <div class="text-2xl font-medium text-black text-center mt-2 mb-2 p-2">
+                        <h1>{{props.user.name}}</h1>
+                    </div>
                 </div>
             </div>
             <div class="absolute top-0 right-0 m-4" v-if="props.isOwnProfile">
@@ -268,30 +271,43 @@ const navigateToUserProfile = (username) => {
 
             <div v-if="currentSection === 'public-profile'" class="mt-4">
                 <Panel class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
-                    <div class="text-center font-medium text-2xl mb-6">
-                        <h1>Profile</h1>
+                    <div class="grid grid-cols-3 justify-items-center">
+                        <div class="col-start-2 font-medium text-2xl mb-6">
+                            <h1>Profile</h1>
+                        </div>
+                        <div class="justify-self-end">
+                            <button v-if="props.isOwnProfile" @click="openBioModal" class="bg-darkOrange text-mintGreen p-2 rounded">Edit Bio</button>
+                            <div v-if="props.auth.user.id !== props.user.id">
+                                <button v-if="!props.isFollowing" @click="followUser"
+                                        class="bg-blue-500 text-mintGreen p-2 rounded">Follow
+                                </button>
+                                <button v-else @click="unfollowUser" class="bg-red-500 text-mintGreen p-2 rounded">
+                                    Unfollow
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="mt-8">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <Panel
-                                    class="p-6 rounded-lg shadow-xl transform transition-transform space-y-2  mx-auto">
-                                    <div class="font-medium text-center">
-                                        <p>{{ props.user.bio || 'No bio available' }}</p>
-                                    </div>
+                                <Panel class="container rounded-lg shadow-xl transform transition-transform h-96">
+                                   <div class="grid grid-rows-2 gap-4 p-4 size-full">
+                                       <div>
+                                           <div class="text-center font-medium">
+                                               <h1>Social Networks</h1>
+                                               <div class="flex md:flex-wrap max-md:flex-col justify-center md:space-x-4 text-4xl mt-4 max-md:text-lg">
+                                                   <Link><i class="fa-brands fa-facebook text-blue-700"></i></Link>
+                                                   <Link><i class="fa-brands fa-instagram text-red-700"></i></Link>
+                                                   <Link><i class="fa-solid fa-link text-white"></i></Link>
+                                                   <Link><i class="fa-brands fa-youtube text-red-700"></i></Link>
+                                               </div>
+                                           </div>
+                                       </div>
+                                       <div class="font-medium text-center">
+                                           <p>{{ props.user.bio || 'No bio available' }}</p>
+                                       </div>
+                                   </div>
                                 </Panel>
-                                <hr class="border-darkOrange mt-4 mb-4">
-                                <button v-if="props.isOwnProfile" @click="openBioModal"
-                                        class="bg-darkOrange text-mintGreen p-2 rounded mt-2">Edit Bio
-                                </button>
-                                <div v-if="props.auth.user.id !== props.user.id">
-                                    <button v-if="!props.isFollowing" @click="followUser"
-                                            class="bg-blue-500 text-mintGreen p-2 rounded">Follow
-                                    </button>
-                                    <button v-else @click="unfollowUser" class="bg-red-500 text-mintGreen p-2 rounded">
-                                        Unfollow
-                                    </button>
-                                </div>
                             </div>
                             <!-- Modal for Bio Editing  -->
                             <div v-if="showBioModal" class="fixed z-10 inset-0 overflow-y-auto">
@@ -311,7 +327,7 @@ const navigateToUserProfile = (username) => {
                             <div>
                                 <div class="container mx-auto">
                                     <Panel
-                                        class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto">
+                                        class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto h-96">
                                         <ul class="flex justify-evenly mb-4">
                                             <li>
                                                 <button @click="switchFollowerSection('followers')" :class="{'text-mintGreen' : currentFollowerSection === 'followers'}"
@@ -342,7 +358,6 @@ const navigateToUserProfile = (username) => {
                                     </Panel>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </Panel>

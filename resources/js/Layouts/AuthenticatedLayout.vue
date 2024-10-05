@@ -16,7 +16,7 @@ const showingNavigationDropdown = ref(false);
         <div class="min-h-screen">
             <nav class="bg-white fixed top-0 left-0 w-full shadow-md z-50 border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mx-8 max-w-8xl  px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
@@ -41,7 +41,7 @@ const showingNavigationDropdown = ref(false);
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('mealplanner.index')" :active="route().current('mealplanner.index')">
-                                    Meal Panner
+                                    Meal Planner
                                 </NavLink>
                             </div>
                         </div>

@@ -41,12 +41,14 @@
 
                 // Retrieve all recipes with their related categories and ingredients using eager loading
                 $recipes = Recipe::with(['categories', 'ingredients', 'user'])
+                    ->withCount(['likes'])
                     ->orderBy('created_at', 'desc')
                     ->paginate(10);
             }
             // Add bookmark status to each recipe
-            $recipes->getCollection()->transform(function ($recipe) {
-                $recipe->is_bookmarked = auth()->user()->bookmarkedRecipes->contains($recipe->id);
+            $recipes->getCollection()->transform(function ($recipe) use ($user) {
+                $recipe->is_bookmarked = $user && $user->bookmarkedRecipes->contains($recipe->id);
+                $recipe->is_liked = $user && $user->likedRecipes->contains($recipe->id);
                 return $recipe;
             });
 
@@ -271,7 +273,6 @@
             $user->bookmarkedRecipes()->toggle($recipe->id);
             return response()->json(['success' => true]);
         }
-
         public function like(Recipe $recipe){
             $user = auth()->user();
             if(!$user->hasLiked($recipe)){

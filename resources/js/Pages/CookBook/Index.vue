@@ -6,6 +6,8 @@ import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
 
 const {props} = usePage();
+
+
 // Categories, Recipes, and uncategorized bookmarks data from the backend
 const categories = ref(props.categories);
 const recipes = ref(props.recipes);
@@ -137,7 +139,7 @@ onMounted(() => {
                                 <ul class="flex flex-col space-y-2">
                                     <li v-for="bookmark in bookmarkedRecipes" :key="bookmark.id" draggable="true" @dragstart="(event) => dragBookmark(event, bookmark.id)"
                                         class="p-2 rounded-lg">
-                                           <RecipeCard :recipe="bookmark" :isBookmarked="bookmark.is_bookmarked" :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark" :iconCompact="true"/>
+                                           <RecipeCard :recipe="bookmark" :isBookmarked="bookmark.is_bookmarked" :navigateToRecipe="navigateToRecipe" :toggleBookmark="toggleBookmark" :iconCompact="true" :showSocialIcons="false"/>
                                     </li>
                                 </ul>
                             </div>

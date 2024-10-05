@@ -2,6 +2,7 @@
 
     use App\Http\Controllers\CategoryController;
     use App\Http\Controllers\CookBookController;
+    use App\Http\Controllers\LikeController;
     use App\Http\Controllers\MailgunWebhookController;
     use App\Http\Controllers\MealPlanController;
     use App\Http\Controllers\MealPlannerController;
@@ -122,6 +123,9 @@
         Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
         Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
         Route::get('/payment-cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+
+        // Social routes
+        Route::post('/recipes/{recipe}/like', [LikeController::class, 'toggleLike'])->name('recipes.like');
     });
 
     Route::get('/about', function (){

@@ -156,8 +156,10 @@
                 Log::error('Failed to delete user folder:');
             }
         }
-
         public function mealPlans() {
             return $this->hasMany(MealPlan::class);
+        }
+        public function likedRecipes(){
+            return $this->belongsToMany(Recipe::class, 'likes', 'user_id', 'recipe_id')->withTimestamps();
         }
     }

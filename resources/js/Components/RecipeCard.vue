@@ -22,6 +22,10 @@ const props = defineProps({
       type:Boolean,
       default:true
     },
+    showSocialIcons: {
+        type: Boolean,
+        default: true
+    },
     toggleBookmark:Function,
     navigateToRecipe: Function,
 });
@@ -56,7 +60,7 @@ const props = defineProps({
                     </div>
                 </div>
             </div>
-            <RecipeCardFooter v-if="showFooter" :recipe="props.recipe" :toggleBookmark="toggleBookmark"/>
+            <RecipeCardFooter v-if="showFooter" :recipe="props.recipe" :toggleBookmark="toggleBookmark" :showSocialIcons/>
         </div>
     </div>
 </template>

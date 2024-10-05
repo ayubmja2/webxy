@@ -10,6 +10,10 @@ const props = defineProps({
         type:Boolean,
         default: true
     },
+    showSocialIcons: {
+        type: Boolean,
+        default: true
+    },
     toggleBookmark:Function
 });
 
@@ -17,7 +21,7 @@ const props = defineProps({
 
 <template>
    <div  v-if="showFooter" class="container flex justify-between mt-4">
-       <SocialIcons :recipe="recipe" :toggleBookmark="toggleBookmark"/>
+       <SocialIcons :recipe="recipe" :toggleBookmark="toggleBookmark" :showSocialIcons/>
    </div>
 </template>
 

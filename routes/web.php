@@ -127,7 +127,7 @@
 
         // Social routes
         Route::post('/recipes/{recipe}/like', [LikeController::class, 'toggleLike'])->name('recipes.like');
-        Route::post('/recipes/{recipe}/repost', [RepostController::class, 'repost'])->name('recipes.repost');
+        Route::post('/recipes/{recipe}/repost', [RepostController::class, 'toggleRepost'])->name('recipes.repost');
     });
 
     Route::get('/about', function (){

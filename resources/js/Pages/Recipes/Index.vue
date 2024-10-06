@@ -52,30 +52,6 @@ onMounted(() => {
     });
 });
 
-// const loadMore = () => {
-//     if (recipes.value.next_page_url) {
-//         router.get(recipes.value.next_page_url, {}, {
-//             preserveScroll: true,
-//             preserveState: true,
-//             onSuccess: (page) => {
-//                 recipes.value.data = recipes.value.data.concat(page.props.recipes.data);
-//                 recipes.value.next_page_url = page.props.recipes.next_page_url;
-//                 history.replaceState(null, '', `/recipes`);
-//             }
-//         });
-//     } else if (searchType.value === 'users' && users.value.next_page_url) {
-//         router.get(users.value.next_page_url, {}, {
-//             preserveScroll: true,
-//             preserveState: true,
-//             onSuccess: (page) => {
-//                 users.value.data = users.value.data.concat(page.props.users.data);
-//                 users.value.next_page_url = page.props.users.next_page_url;
-//                 history.replaceState(null, '', `/profile`);
-//             }
-//         });
-//     }
-// };
-
 // Toggle between "All" and "Following" feeds
 const toggleFeed = (filter) => {
     const url = filter === 'following' ? '/recipes?filter=following' : '/recipes';

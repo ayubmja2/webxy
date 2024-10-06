@@ -17,59 +17,6 @@ use Intervention\Image\ImageManager;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-//    public function edit(Request $request, User $user = null): Response
-//    {
-//        $user = $user ?: $request->user();
-//        $authUser = $request->user();
-//        $isOwnProfile = $authUser->id === $user->id;
-//        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
-//
-//        //fetch followers
-//        $followers = $user->followers;
-//
-//        $following = $user->following;
-//        //fetch recipe count
-//
-//        $recipeCount = $user->recipes()->count();
-//
-//
-//        return Inertia::render('Profile/Edit', [
-//            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
-//            'status' => session('status'),
-//            'user' => $user,
-//            'authUser' => $authUser,
-//            'isFollowing' => $isFollowing,
-//            'isOwnProfile' => $isOwnProfile,
-//            'followers' => $followers,
-//            'following' => $following,
-//            'followersCount' => count($followers),
-//            'recipeCount' => $recipeCount,
-//        ]);
-//    }
-
-//    public function show(Request $request, User $user){
-//        $authUser = $request->user();
-//        $isFollowing = $authUser->following()->where('following_user_id', $user->id)->exists();
-//
-//        //fetch followers
-//        $followers = $user->followers;
-//
-//        $recipeCount = $user->recipes()->count();
-//
-//        return Inertia::render('Profile/Edit', [
-//            'mustVerifyEmail' => $authUser instanceof MustVerifyEmail,
-//            'status' => session('status'),
-//            'user' => $user,
-//            'authUser' => $authUser,
-//            'isFollowing' => $isFollowing,
-//            'isOwnProfile' => $authUser->id === $user->id,
-//            'followersCount' => count($followers),
-//            'recipeCount' => $recipeCount,
-//        ]);
-//    }
 
     public function show($username){
         $user = User::where('name', $username)->firstOrFail();

@@ -6,6 +6,7 @@ import axios from "axios";
 import Panel from "@/Components/Panel.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
 import UserCard from "@/Components/UserCard.vue";
+import {debounce} from "@/Utils/Debounce.js";
 
 const { props } = usePage();
 const notifications = ref([]);
@@ -51,29 +52,29 @@ onMounted(() => {
     });
 });
 
-const loadMore = () => {
-    if (recipes.value.next_page_url) {
-        router.get(recipes.value.next_page_url, {}, {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: (page) => {
-                recipes.value.data = recipes.value.data.concat(page.props.recipes.data);
-                recipes.value.next_page_url = page.props.recipes.next_page_url;
-                history.replaceState(null, '', `/recipes`);
-            }
-        });
-    } else if (searchType.value === 'users' && users.value.next_page_url) {
-        router.get(users.value.next_page_url, {}, {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: (page) => {
-                users.value.data = users.value.data.concat(page.props.users.data);
-                users.value.next_page_url = page.props.users.next_page_url;
-                history.replaceState(null, '', `/profile`);
-            }
-        });
-    }
-};
+// const loadMore = () => {
+//     if (recipes.value.next_page_url) {
+//         router.get(recipes.value.next_page_url, {}, {
+//             preserveScroll: true,
+//             preserveState: true,
+//             onSuccess: (page) => {
+//                 recipes.value.data = recipes.value.data.concat(page.props.recipes.data);
+//                 recipes.value.next_page_url = page.props.recipes.next_page_url;
+//                 history.replaceState(null, '', `/recipes`);
+//             }
+//         });
+//     } else if (searchType.value === 'users' && users.value.next_page_url) {
+//         router.get(users.value.next_page_url, {}, {
+//             preserveScroll: true,
+//             preserveState: true,
+//             onSuccess: (page) => {
+//                 users.value.data = users.value.data.concat(page.props.users.data);
+//                 users.value.next_page_url = page.props.users.next_page_url;
+//                 history.replaceState(null, '', `/profile`);
+//             }
+//         });
+//     }
+// };
 
 // Toggle between "All" and "Following" feeds
 const toggleFeed = (filter) => {
@@ -120,68 +121,119 @@ const search = async () => {
     searchCompleted.value = false;
     isSearching.value = true;
 
-    if (searchQuery.value.trim() === '') {
-        // Reload the feed based on searchType
-        if (searchType.value === 'recipes') {
-            await router.visit('/recipes', {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: (page) => {
-                    recipes.value = page.props.recipes;
-                    users.value = { data: [] }; // Clear users
-                    searchCompleted.value = false;
-                    isSearching.value = false;
-                }
-            });
-        } else if (searchType.value === 'users') {
-            await router.visit('/recipes', {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: (page) => {
-                    users.value = page.props.users;
-                    recipes.value = { data: [] }; // Clear recipes
-                    searchCompleted.value = false;
-                    isSearching.value = false;
-                }
-            });
+    await router.get('/search', {
+        query: searchQuery.value,
+        type: searchType.value,
+    }, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: (page) => {
+            if (searchType.value === 'recipes') {
+                recipes.value = page.props.recipes;
+                users.value = { data: [] };
+            } else {
+                users.value = page.props.users;
+                recipes.value = { data: [] };
+            }
+            // Clean the URL after search completes
+            history.replaceState(null, '', '/recipes');
+            searchCompleted.value = true;
+            isSearching.value = false;
         }
-    } else {
-        // Perform the search
-        await router.get('/search', { query: searchQuery.value, type: searchType.value }, {
-            preserveState: true,
+    });
+};
+
+const loadMore = () => {
+    if (recipes.value.next_page_url) {
+        router.get(recipes.value.next_page_url, {}, {
             preserveScroll: true,
+            preserveState: true,
             onSuccess: (page) => {
-                if (searchType.value === 'recipes') {
-                    recipes.value = page.props.recipes;
-                    users.value = { data: [] }; // Clear users
-                } else if (searchType.value === 'users') {
-                    users.value = page.props.users;
-                    recipes.value = { data: [] }; // Clear recipes
-                }
-                isSearching.value = false;
-                searchCompleted.value = true;
+                recipes.value.data = recipes.value.data.concat(page.props.recipes.data);
+                recipes.value.next_page_url = page.props.recipes.next_page_url;
+                // Clean the URL after loading more
+                history.replaceState(null, '', '/recipes');
+            }
+        });
+    } else if (searchType.value === 'users' && users.value.next_page_url) {
+        router.get(users.value.next_page_url, {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                users.value.data = users.value.data.concat(page.props.users.data);
+                users.value.next_page_url = page.props.users.next_page_url;
+                // Clean the URL after loading more
+                history.replaceState(null, '', '/profile');
             }
         });
     }
 };
 
+
+
+const resetFeed = async () => {
+    const url = searchType.value === 'recipes' ? '/recipes' : '/recipes';  // Unified route for both
+    await router.visit(url, {
+        preserveScroll: true,
+        preserveState: true,
+        only: ['recipes', 'users'], // Fetch only necessary data
+        onSuccess: (page) => {
+            // Reset the recipes and users based on the search type
+            if (searchType.value === 'recipes') {
+                recipes.value = page.props.recipes || { data: [], next_page_url: null };
+                users.value = { data: [] }; // Clear users when resetting recipes feed
+            } else if (searchType.value === 'users') {
+                users.value = page.props.users || { data: [], next_page_url: null };
+                recipes.value = { data: [] }; // Clear recipes when resetting users feed
+            }
+            searchCompleted.value = false;
+        }
+    });
+};
+
+
+
+const debounceSearch = debounce(() => {
+    search();
+}, 300);
+
 // Watch for changes to the searchQuery and reload
-watch(searchQuery, (newQuery) => {
+watch(searchQuery, async (newQuery) => {
     if (newQuery.trim() === '') {
-        search();
+       await resetFeed();
+    }else {
+        debounceSearch();
     }
 });
 
 const navigateToRecipe = (id) => {
-    router.get(`/recipes/${id}`);
+    // Navigate to the recipe without preserving the search state
+    router.get(`/recipes/${id}`, {}, {
+        preserveState: false,  // This ensures we don't carry over the search state
+        preserveScroll: true   // You can keep this if you want to maintain scroll position
+    });
 };
 
-const navigateToUserProfile = (username) => {
-    router.get(`/profile/${username}`);
-}
+
+const navigateToUserProfile = (username) => router.get(`/profile/${username}`, {}, {
+    preserveScroll:true,
+    preserveState:true,
+});
 const navigateToCategory = (id) => {
     router.get(`/categories/${id}`);
 };
+
+window.addEventListener('popstate', function (event) {
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('?query=') || currentUrl.includes('&type=')) {
+        // Force redirect back to /recipes if search query or type is present
+        router.get('/recipes', {}, {
+            preserveState: false,
+            preserveScroll: true,
+        });
+    }
+});
+
 </script>
 
 <template>

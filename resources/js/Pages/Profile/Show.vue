@@ -9,6 +9,12 @@ import UpdatePasswordForm from "@/Pages/Profile/Partials/UpdatePasswordForm.vue"
 import UpdateProfileInformationForm from "@/Pages/Profile/Partials/UpdateProfileInformationForm.vue";
 import RecipeCard from "@/Components/RecipeCard.vue";
 import UserCard from "@/Components/UserCard.vue";
+import SectionNavigation from "@/Components/SectionNavigation.vue";
+import FollowerNavigation from "@/Components/FollowerNavigation.vue";
+import {handleImageChange} from "@/Utils/ImageUploader.js";
+import {apiPost} from "@/Utils/ApiService.js";
+import {debounce} from "@/Utils/Debounce.js";
+import BioModal from "@/Components/BioModal.vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -41,6 +47,18 @@ const following = ref(props.following || []);
 
 const currentFollowerSection = ref('following');
 
+const followerOptions = ref([
+    {value: 'followers', label: 'Followers'},
+    {value: 'following', label: 'Following'},
+]);
+
+const sectionOptions = ref([
+    {value: 'public-profile', label: 'Profile'},
+    {value: 'recipes', label: 'Recipes'},
+    {value: 'account-info', label: 'Account Info'},
+    {value: 'settings', label: 'Settings'},
+]);
+
 const openBioModal = () => {
     showBioModal.value = true;
 };
@@ -51,11 +69,11 @@ const closeBioModal = () => {
 
 const saveBio = async () => {
     try {
-        await axios.post('/profile/update-bio', {bio: bio.value});
+        await apiPost('/profile/update-bio', {bio: bio.value});
         props.user.bio = bio.value;
         closeBioModal();
     } catch (error) {
-        alert('Failed to update bio.')
+       //later
     }
 };
 
@@ -84,28 +102,12 @@ const toggleDropdown = () => {
 };
 
 const onCoverImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            coverArt.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-    newCoverImage.value = file;
+    handleImageChange(event, coverArt, newCoverImage)
     updateProfileImage('cover_image', newCoverImage.value);
 };
 
 const onProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            profileImage.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-    newProfileImage.value = file;
+    handleImageChange(event, profileImage, newProfileImage)
     updateProfileImage('profile_image', newProfileImage.value);
 };
 
@@ -154,7 +156,7 @@ const saveAllergies = async () => {
         alert('Failed to update allergens.')
     }
 };
-
+const debouncedSaveAllergies = debounce(saveAllergies, 300);
 const deleteAllergy = async (allergy) => {
     try {
         const response = await axios.post('/profile/update-allergens', {allergens: allergies.value.filter(a => a !== allergy)});
@@ -166,18 +168,18 @@ const deleteAllergy = async (allergy) => {
 
 const followUser = async () => {
     try {
-        const response = await axios.post(`/profile/${props.user.name}/follow`);
+        const response = await apiPost(`/profile/${props.user.name}/follow`);
         if (response.status === 200) {
             props.isFollowing = true;
             followersCount.value += 1;
         }
     } catch (error) {
-        console.log('Error following user', error);
+       //later
     }
 };
 const unfollowUser = async () => {
     try {
-        const response = await axios.post(`/profile/${props.user.name}/unfollow`);
+        const response = await apiPost(`/profile/${props.user.name}/unfollow`);
         if (response.status === 200) {
             props.isFollowing = false;
             followersCount.value -= 1;
@@ -189,7 +191,7 @@ const unfollowUser = async () => {
 
 const toggleBookmark = async (recipe) => {
     try {
-        await axios.post(`/recipes/${recipe.id}/bookmark`);
+        await apiPost(`/recipes/${recipe.id}/bookmark`);
         recipe.is_bookmarked = !recipe.is_bookmarked;
     } catch (error) {
         console.log('Error bookmarking recipe:', error);
@@ -232,38 +234,12 @@ const navigateToUserProfile = (username) => {
             </div>
         </div>
         <div class="px-10">
+
             <!--  Profile Navigation -->
             <div class="mx-auto mt-4">
                 <Panel class="p-6 rounded-lg shadow-xl transform transition-transform">
                     <div class="container mx-auto">
-                        <ul class="flex justify-evenly items-center">
-                            <li>
-                                <button @click="switchSection('public-profile')" :class="{'text-mintGreen' : currentSection === 'public-profile'}"
-                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                    Profile
-                                </button>
-                            </li>
-
-                            <li v-if="!props.isOwnProfile">
-                                <button @click="switchSection('recipes')" :class="{'text-mintGreen' : currentSection === 'recipes'}"
-                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                    Recipes
-                                </button>
-                            </li>
-
-                            <li v-if="props.isOwnProfile">
-                                <button @click="switchSection('account-info')" v-if="props.isOwnProfile" :class="{'text-mintGreen' : currentSection === 'account-info'}"
-                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                    Account Info
-                                </button>
-                            </li>
-                            <li v-if="props.isOwnProfile">
-                                <button @click="switchSection('settings')" v-if="props.isOwnProfile" :class="{'text-mintGreen' : currentSection === 'settings'}"
-                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                    Settings
-                                </button>
-                            </li>
-                        </ul>
+                        <SectionNavigation :currentSection="currentSection" :options="sectionOptions" @switch-section="switchSection"/>
                     </div>
                 </Panel>
             </div>
@@ -277,6 +253,7 @@ const navigateToUserProfile = (username) => {
                         </div>
                         <div class="justify-self-end">
                             <button v-if="props.isOwnProfile" @click="openBioModal" class="bg-darkOrange text-mintGreen p-2 rounded">Edit Bio</button>
+                            <BioModal v-if="showBioModal" :bio="bio" @update:bio="bio=$event" :saveBio="saveBio" :closeModal="closeBioModal" />
                             <div v-if="props.auth.user.id !== props.user.id">
                                 <button v-if="!props.isFollowing" @click="followUser"
                                         class="bg-blue-500 text-mintGreen p-2 rounded">Follow
@@ -314,8 +291,7 @@ const navigateToUserProfile = (username) => {
                                 <div class="flex items-center justify-center min-h-screen">
                                     <div class="bg-white p-6 rounded-center min-h-screen">
                                         <h2 class="text-xl mb-4">Edit Bio</h2>
-                                        <textarea v-model="bio" class="w-full p-2 border rounded mb-4"
-                                                  rows="4"></textarea>
+                                        <textarea :value="bio" @input="$emit('update:bio', $event.target.value)" class="w-full p-2 border rounded mb-4" rows="4"></textarea>
                                         <button @click="saveBio" class="bg-green-500 text-mintGreen p-2 rounded">Save
                                         </button>
                                         <button @click="closeBioModal" class="bg-red-500 text-mintGreen p-2 rounded">
@@ -327,31 +303,26 @@ const navigateToUserProfile = (username) => {
                             <div>
                                 <div class="container mx-auto">
                                     <Panel
-                                        class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto h-96">
-                                        <ul class="flex justify-evenly mb-4">
-                                            <li>
-                                                <button @click="switchFollowerSection('followers')" :class="{'text-mintGreen' : currentFollowerSection === 'followers'}"
-                                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                                    Followers
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button @click="switchFollowerSection('following')" :class="{'text-mintGreen' : currentFollowerSection === 'following'}"
-                                                        class="bg-gradient-to-b from-darkOrange to-darkOrange rounded-2xl p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-medium">
-                                                    Following
-                                                </button>
-                                            </li>
-                                        </ul>
-                                        <div class="container mx-auto w-3/4 overflow-hidden overflow-y-scroll">
-                                            <ul v-if="currentFollowerSection === 'followers'" class="grid grid-cols-1 overflow-hidden overflow-y-scroll">
+                                        class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto h-96 overflow-hidden overflow-y-scroll">
+                                        <FollowerNavigation :currentFollowerSection="currentFollowerSection" :options="followerOptions" @switch-follower-section="switchFollowerSection"/>
+                                        <div class="container">
+                                            <ul v-if="currentFollowerSection === 'followers'" class="grid grid-cols-1">
                                                <li class="h-96 mb-5">
-                                                   <UserCard v-for="user in followers" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile" class="mb-2"/>
+                                                   <UserCard v-for="user in followers" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
                                                </li>
                                             </ul>
 
-                                            <ul v-if="currentFollowerSection === 'following'" class="grid grid-cols-1 overflow-hidden overflow-y-scroll">
+                                            <ul v-if="currentFollowerSection === 'following'" class="grid grid-cols-1">
                                                 <li>
-                                                    <UserCard  v-for="user in following" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile" class="mb-2"/>
+                                                    <UserCard  v-for="user in following" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <ul v-if="currentFollowerSection === 'followers'">
+                                                <li>
+                                                   <UserCard v-for="user in followers" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
                                                 </li>
                                             </ul>
                                         </div>
@@ -385,7 +356,7 @@ const navigateToUserProfile = (username) => {
                                 <h1>Allergies</h1>
                             </div>
                             <div class="flex flex-col space-y-4 p-6 mx-auto">
-                                <input type="text" v-model="allergiesInput" @keyup.enter="saveAllergies"
+                                <input type="text" v-model="allergiesInput" @keyup.enter="debouncedSaveAllergies"
                                        placeholder="wheat, soy, eggs" class="rounded-xl">
                                 <button @click="saveAllergies"
                                         class="bg-gradient-to-b from-darkOrange to-darkOrange  p-1 px-4 shadow-md transition transform active:translate-x-0 active:translate-y-1 active:shadow-md hover:dark:shadow-orange-500 hover:text-white font-mediump-2 rounded-xl">

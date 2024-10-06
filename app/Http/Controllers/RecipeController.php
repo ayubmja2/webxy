@@ -236,25 +236,36 @@
             $query = $request->input('query');
             $searchType = $request->input('type');
 
-            if($searchType === 'recipes') {
+            if ($searchType === 'recipes') {
                 $results = Recipe::where('title', 'like', '%' . $query . '%')
                     ->orWhere('description', 'like', '%' . $query . '%')
                     ->orderBy('created_at', 'desc')
                     ->with('user')
                     ->paginate(10);
+
                 return Inertia::render('Recipes/Index', [
                     'recipes' => $results,
                     'query' => $query,
+                    'searchType' => $searchType,
                 ]);
-            }elseif( $searchType === 'users') {
+            } elseif ($searchType === 'users') {
                 $results = User::where('name', 'like', '%' . $query . '%')
                     ->orderBy('created_at', 'desc')
                     ->paginate(10);
+
                 return Inertia::render('Recipes/Index', [
                     'users' => $results,
                     'query' => $query,
+                    'searchType' => $searchType,
                 ]);
             }
+
+            return Inertia::render('Recipes/Index', [
+                'recipes' => [],
+                'users' => [],
+                'query' => $query,
+                'searchType' => $searchType,
+            ]);
         }
 
         public function searchByCategory(Request $request) {

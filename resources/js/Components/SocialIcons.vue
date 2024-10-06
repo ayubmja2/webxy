@@ -76,15 +76,21 @@ const handleLike = async () => {
 }
 
 //handles repost
-const handleRepost = async() => {
-    try{
-        await axios.post(`/recipes/${props.recipe.id}/repost`);
-        isReposted.value = true; // update repost state locally
-        repostsCount.value++;
-    }catch (error){
-        console.error("Error reposting recipe:", error);
+const handleRepost = async () => {
+    try {
+        const response = await axios.post(`/recipes/${props.recipe.id}/repost`);
+        isReposted.value = response.data.reposted;
+
+        // Update the repost count based on the action (repost or undo repost)
+        if (isReposted.value) {
+            repostsCount.value++;
+        } else {
+            repostsCount.value--;
+        }
+    } catch (error) {
+        console.error("Error toggling repost:", error);
     }
-}
+};
 </script>
 
 <template>

@@ -7,29 +7,34 @@ use Illuminate\Http\Request;
 
 class RepostController extends Controller
 {
-    public function repost(Request $request, Recipe $recipe)
+    public function toggleRepost(Request $request, Recipe $recipe)
     {
         $user = $request->user();
 
-        // Create a new repost instance
-        $repost = new Recipe();
+        // Check if the user has already reposted this recipe
+        $existingRepost = Recipe::where('user_id', $user->id)
+            ->where('repost_id', $recipe->id)
+            ->first();
 
-        // Assign fields from the original recipe to the repost
-        $repost->user_id = $user->id;  // The user who is reposting
-        $repost->title = $recipe->title;
-        $repost->description = $recipe->description;
-        $repost->instruction = $recipe->instruction;
-
-        // Copy image_url from original if it exists
-        if (!empty($recipe->image_url)) {
+        if ($existingRepost) {
+            // If repost exists, delete it (undo repost)
+            $existingRepost->delete();
+            $reposted = false;
+        } else {
+            // Create a new repost instance (repost)
+            $repost = new Recipe();
+            $repost->user_id = $user->id;  // The user who is reposting
+            $repost->title = $recipe->title;
+            $repost->description = $recipe->description;
+            $repost->instruction = $recipe->instruction;
             $repost->image_url = $recipe->image_url;
+            $repost->repost_id = $recipe->id;  // Link to the original recipe
+
+            $repost->save();
+            $reposted = true;
         }
 
-        $repost->repost_id = $recipe->id;  // Link to the original recipe
-
-        // Save the repost
-        $repost->save();
-
-        return response()->json(['success' => true]);
+        // Return response with success and repost status
+        return response()->json(['success' => true, 'reposted' => $reposted]);
     }
 }

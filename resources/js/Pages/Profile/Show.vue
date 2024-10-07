@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {ref} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import {usePage, Link, router} from '@inertiajs/vue3';
 import axios from 'axios';
 import Panel from "@/Components/Panel.vue";
@@ -24,97 +24,111 @@ defineProps({
         type: String
     }
 });
+const SECTIONS = {
+    PUBLIC_PROFILE: 'public-profile',
+    RECIPES: 'recipes',
+    ACCOUNT_INFO: 'account-info',
+    SETTINGS: 'settings'
+};
+
+const API_ENDPOINTS = {
+    UPDATE_BIO: '/profile/update-bio',
+    UPDATE_ALLERGENS: '/profile/update-allergens',
+    FOLLOW_USER: (username) => `/profile/${username}/follow`,
+    UNFOLLOW_USER: (username) => `/profile/${username}/unfollow`
+};
 
 const {props} = usePage();
-
+const user = ref(props.user || {});
 const recipes = ref(props.recipes || []);
-
-
 const coverArt = ref(props.user.cover_image_url || '/images/placeholders/default-cover.png');
 const profileImage = ref(props.user.profile_image_url || '/images/placeholders/default-profile.png');
-const newCoverImage = ref(null);
-const newProfileImage = ref(null);
+const newCoverImage = ref(null);  // This should always be a ref
+const newProfileImage = ref(null);  // This should also be a ref
 const showDropdown = ref(false);
 const currentSection = ref('public-profile'); // State variable to track the current section
-
 const showBioModal = ref(false);
 const bio = ref(props.user.bio || '');
-
 const followers = ref(props.followers || []);
 const followersCount = ref(props.followersCount || 0);
 const recipeCount = ref(props.recipeCount || 0);
+const allergiesInput = ref('');
+const allergies = ref(props.user.allergens || []);
 const following = ref(props.following || []);
-
 const currentFollowerSection = ref('following');
 
-const followerOptions = ref([
+// centralized api request function
+const apiRequest = async (url, method = 'POST', data = null) => {
+    try{
+        const headers = {
+            'Content-Type': data instanceof FormData ? 'multipart/form-data': 'application/json'
+        };
+        const response = await axios({method, url, data, headers});
+        return response;
+    }catch (error) {
+        console.log(`Error during ${method} request to ${url}`)
+    }
+};
+
+// computed properties
+
+const displayedUsers = computed(() => {
+   return currentFollowerSection.value === 'followers' ? followers.value : following.value;
+});
+
+const sectionOptions = computed( () => [
+    {value: SECTIONS.PUBLIC_PROFILE, label: 'Profile'},
+    {value: SECTIONS.RECIPES, label: 'Recipes'},
+    {value: SECTIONS.ACCOUNT_INFO, label: 'Account Info'},
+    {value: SECTIONS.SETTINGS, label: 'Settings'},
+]);
+
+const followerOptions = computed( () => [
     {value: 'followers', label: 'Followers'},
     {value: 'following', label: 'Following'},
 ]);
 
-const sectionOptions = ref([
-    {value: 'public-profile', label: 'Profile'},
-    {value: 'recipes', label: 'Recipes'},
-    {value: 'account-info', label: 'Account Info'},
-    {value: 'settings', label: 'Settings'},
-]);
-
-const openBioModal = () => {
-    showBioModal.value = true;
+// section handlers
+const switchSection = async (section) => {
+    currentSection.value = section;
 };
 
-const closeBioModal = () => {
-    showBioModal.value = false;
-};
+const switchFollowerSection = (section) => {
+    currentFollowerSection.value = section;
+}
+
+const openBioModal = () => showBioModal.value = true;
+const closeBioModal = () => showBioModal.value = false;
 
 const saveBio = async () => {
     try {
-        await apiPost('/profile/update-bio', {bio: bio.value});
-        props.user.bio = bio.value;
-        closeBioModal();
+        const response = await apiRequest(API_ENDPOINTS.UPDATE_BIO, 'POST', { bio: bio.value });
+        if (response) {
+            user.value.bio = bio.value; // Update the user value to ensure reactivity
+            closeBioModal();
+        }
     } catch (error) {
-       //later
+        console.log('Error saving bio:', error);
     }
 };
 
-//fetch followers when the component is mounted
-const fetchFollowers = async () => {
-    try {
-        const response = await axios.get(`/profile/${props.user.id}/followers`);
-        followers.value = response.data.followers;
-    } catch (error) {
-        console.log('Error fetching followers:');
-    }
-};
-const fetchFollowing = async () => {
-    try {
-        const response = await axios.get(`/profile/${props.user.id}/following`);
-        following.value = response.data.following;
-    } catch (error) {
-        console.log('Error fetching following:');
-    }
-};
-fetchFollowers();
-fetchFollowing();
+// Fetch followers and following once
 
-const toggleDropdown = () => {
-    showDropdown.value = !showDropdown.value;
-};
+const fetchUsers = async () => {
+    const followersRes = await apiRequest(`/profile/${props.user.id}/followers`, 'GET');
+    const followingRes = await apiRequest(`/profile/${props.user.id}/following`, 'GET');
 
-const onCoverImageChange = (event) => {
-    handleImageChange(event, coverArt, newCoverImage)
-    updateProfileImage('cover_image', newCoverImage.value);
+    if (followersRes) followers.value = followersRes.data.followers;
+    if (followingRes) following.value = followingRes.data.following;
 };
+onMounted(fetchUsers);
 
-const onProfileImageChange = (event) => {
-    handleImageChange(event, profileImage, newProfileImage)
-    updateProfileImage('profile_image', newProfileImage.value);
-};
+const toggleDropdown = () => (showDropdown.value = !showDropdown.value);
 
+// Image Upload Handlers
 const updateProfileImage = async (type, file) => {
     const formData = new FormData();
     formData.append(type, file);
-
     try {
         await axios.post('/profile/update', formData, {
             headers: {
@@ -125,84 +139,58 @@ const updateProfileImage = async (type, file) => {
         alert('Failed to update profile.');
     }
 };
-
-const switchSection = async (section) => {
-    currentSection.value = section;
+const handleImageChangeAndUpload = async (event, imageRef, fileType,fileRef) => {
+    handleImageChange(event,imageRef,fileRef);
+    await updateProfileImage(fileType, fileRef.value);
 };
+const onCoverImageChange = (event) => handleImageChangeAndUpload(event,coverArt, 'cover_image', newCoverImage);
+const onProfileImageChange = (event) => handleImageChangeAndUpload(event, profileImage, 'profile_image', newProfileImage);
 
-//switch between "Following" and "Followers
-const switchFollowerSection = (section) => {
-    currentFollowerSection.value = section;
-}
-// Allergies handling
-const allergiesInput = ref('');
-const allergies = ref(props.user.allergens || []);
 
+
+// Allergies Handling
 const saveAllergies = async () => {
-    if (!allergiesInput.value.trim()) {
-        return;
-    }
+    if (!allergiesInput.value.trim()) return;
 
     const newAllergy = allergiesInput.value.trim().toLowerCase();
-    if (allergies.value.includes(newAllergy)) {
-        return;
+    if (!allergies.value.includes(newAllergy)) {
+        const response = await apiRequest('/profile/update-allergens', 'POST', { allergens: [...allergies.value, newAllergy] });
+        if (response) allergies.value = response.data.allergens;
     }
-
-    try {
-        const response = await axios.post('/profile/update-allergens', {allergens: [...allergies.value, newAllergy]});
-        allergies.value = response.data.allergens;
-        allergiesInput.value = '';
-    } catch (error) {
-        alert('Failed to update allergens.')
-    }
+    allergiesInput.value = '';
 };
+
 const debouncedSaveAllergies = debounce(saveAllergies, 300);
+
 const deleteAllergy = async (allergy) => {
-    try {
-        const response = await axios.post('/profile/update-allergens', {allergens: allergies.value.filter(a => a !== allergy)});
-        allergies.value = response.data.allergens;
-    } catch (error) {
-        alert('Failed to delete allergy.');
+    const response = await apiRequest('/profile/update-allergens', 'POST', {allergens: allergies.value.filter(a => a !== allergy)});
+    if (response) allergies.value = response.data.allergens;
+};
+
+// Follow/unfollow handlers
+const toggleFollowUser = async  (isFollowing) => {
+    const url = API_ENDPOINTS[isFollowing ? 'UNFOLLOW_USER' : 'FOLLOW_USER'](user.value.name);
+    const response = await apiRequest(url,'POST');
+    if(response.status === 200) {
+        followersCount.value += isFollowing ? -1 : 1;
+        props.isFollowing = !isFollowing;
     }
 };
 
-const followUser = async () => {
-    try {
-        const response = await apiPost(`/profile/${props.user.name}/follow`);
-        if (response.status === 200) {
-            props.isFollowing = true;
-            followersCount.value += 1;
-        }
-    } catch (error) {
-       //later
-    }
-};
-const unfollowUser = async () => {
-    try {
-        const response = await apiPost(`/profile/${props.user.name}/unfollow`);
-        if (response.status === 200) {
-            props.isFollowing = false;
-            followersCount.value -= 1;
-        }
-    } catch (error) {
-        console.log('Error unfollowing user:', error);
-    }
-};
+const debouncedToggleFollowerUser = debounce(toggleFollowUser, 300);
 
+
+// Bookmarking Recipe
 const toggleBookmark = async (recipe) => {
-    try {
-        await apiPost(`/recipes/${recipe.id}/bookmark`);
-        recipe.is_bookmarked = !recipe.is_bookmarked;
-    } catch (error) {
-        console.log('Error bookmarking recipe:', error);
-    }
+    await apiRequest(`/recipes/${recipe.id}/bookmark`, 'POST');
+    recipe.is_bookmarked = !recipe.is_bookmarked;
 };
-const navigateToRecipe = (id) => {
-    router.get(`/recipes/${id}`);
-};
-const navigateToUserProfile = (username) => {
-    router.get(`/profile/${username}`);
-}
+
+// Navigation handlers
+
+const navigateToRecipe = (id) => router.get(`/recipes/${id}`);
+const navigateToUserProfile = (username) => router.get(`/profile/${username}`);
+
 </script>
 
 <template>
@@ -253,13 +241,9 @@ const navigateToUserProfile = (username) => {
                         </div>
                         <div class="justify-self-end">
                             <button v-if="props.isOwnProfile" @click="openBioModal" class="bg-darkOrange text-mintGreen p-2 rounded">Edit Bio</button>
-                            <BioModal v-if="showBioModal" :bio="bio" @update:bio="bio=$event" :saveBio="saveBio" :closeModal="closeBioModal" />
                             <div v-if="props.auth.user.id !== props.user.id">
-                                <button v-if="!props.isFollowing" @click="followUser"
-                                        class="bg-blue-500 text-mintGreen p-2 rounded">Follow
-                                </button>
-                                <button v-else @click="unfollowUser" class="bg-red-500 text-mintGreen p-2 rounded">
-                                    Unfollow
+                                <button @click="debouncedToggleFollowerUser(props.isFollowing)" :class="[props.isFollowing ? 'bg-red-500' : 'bg-blue-500']" class="text-mintGreen p-2 rounded">
+                                    {{props.isFollowing ? 'Unfollow' : 'Follow'}}
                                 </button>
                             </div>
                         </div>
@@ -286,44 +270,16 @@ const navigateToUserProfile = (username) => {
                                    </div>
                                 </Panel>
                             </div>
-                            <!-- Modal for Bio Editing  -->
-                            <div v-if="showBioModal" class="fixed z-10 inset-0 overflow-y-auto">
-                                <div class="flex items-center justify-center min-h-screen">
-                                    <div class="bg-white p-6 rounded-center min-h-screen">
-                                        <h2 class="text-xl mb-4">Edit Bio</h2>
-                                        <textarea :value="bio" @input="$emit('update:bio', $event.target.value)" class="w-full p-2 border rounded mb-4" rows="4"></textarea>
-                                        <button @click="saveBio" class="bg-green-500 text-mintGreen p-2 rounded">Save
-                                        </button>
-                                        <button @click="closeBioModal" class="bg-red-500 text-mintGreen p-2 rounded">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <BioModal v-if="showBioModal" :bio="bio" @update:bio="bio = $event" :saveBio="saveBio" :closeModal="closeBioModal" />
                             <div>
-                                <div class="container mx-auto">
-                                    <Panel
-                                        class="rounded-lg shadow-xl transform transition-transform space-y-1 mx-auto h-96 overflow-hidden overflow-y-scroll">
+                                <div class="container">
+                                    <Panel class="rounded-lg shadow-xl transform transition-transform h-96 overflow-hidden overflow-y-scroll">
                                         <FollowerNavigation :currentFollowerSection="currentFollowerSection" :options="followerOptions" @switch-follower-section="switchFollowerSection"/>
                                         <div class="container">
-                                            <ul v-if="currentFollowerSection === 'followers'" class="grid grid-cols-1">
-                                               <li class="h-96 mb-5">
-                                                   <UserCard v-for="user in followers" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
+                                            <ul>
+                                               <li v-for="user in displayedUsers" :key="user.id" class="mb-5">
+                                                   <UserCard :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile" :compact="true"/>
                                                </li>
-                                            </ul>
-
-                                            <ul v-if="currentFollowerSection === 'following'" class="grid grid-cols-1">
-                                                <li>
-                                                    <UserCard  v-for="user in following" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        <div>
-                                            <ul v-if="currentFollowerSection === 'followers'">
-                                                <li>
-                                                   <UserCard v-for="user in followers" :user="user" :key="user.id" :navigateToUserProfile="navigateToUserProfile"/>
-                                                </li>
                                             </ul>
                                         </div>
                                     </Panel>
